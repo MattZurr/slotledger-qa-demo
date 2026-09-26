@@ -66,41 +66,49 @@ The models were reviewed and committed to Git.
 Commit:
 4751dde — feat: add booking domain models
 
-## 4. Current task
-
 ### TASK 002 — Booking time validation
 
-Status: In progress
+Status: Completed (implementation reviewed; Git commit pending)
 
 File:
-src/validation/bookingValidator.ts
+- `src/validation/bookingValidator.ts`
 
 Function:
-timeValidation(startTime: string, endTime: string): boolean
+- `timeValidation(startTime: string, endTime: string): boolean`
 
 Requirements:
-- Validate HH:mm format.
-- Accept hours from 00 to 23.
-- Accept minutes from 00 to 59.
-- Require endTime to be later than startTime.
-- Reject bookings crossing midnight.
+- Accept time strings in the `HH:mm` format.
+- Accept hours from 00 to 23 and minutes from 00 to 59.
+- Return `true` only when the end time is later than the start time on the same day.
+- Reject equal times, earlier end times and bookings crossing midnight.
 
-Implementation progress:
-- Splitting input strings into hours and minutes.
-- Converting hours and minutes to total minutes.
-- Comparing start and end times.
-- Adding input format and range validation.
+Completed:
+- Implemented comparison by converting hours and minutes into minutes since midnight.
+- Added input-format and time-range validation, according to the completed Codex review.
+- Removed temporary `console.log` checks and the temporary import from `main.ts`.
+- Ran `npm run build` successfully (reported by Codex and visible in VS Code).
 
-The implementation has not yet completed final code review.
+Verification:
+- Codex reported TASK 002 implementation ready after review.
+- Automated unit tests have **not** been added yet; they are TASK 003.
+- The validator was still shown as an untracked file (`U`) in the supplied screenshot. Commit it after checking `git status`.
+
+## 4. Current task
+
+### TASK 003 — Unit tests for booking time validation
+
+Status: Next / not started
+
+Goal:
+- Install and configure Vitest.
+- Create `src/validation/bookingValidator.test.ts`.
+- Write tests for `timeValidation()` covering valid times, equal times, end-before-start, midnight crossing, invalid hour/minute ranges and invalid `HH:mm` format.
+- Confirm the tests can detect a deliberately introduced comparison defect, then restore the correct implementation.
+- Run `npm run test:run` and `npm run build` before committing.
+
+Do not claim the validator is covered by automated tests until these tests have actually run.
 
 ## 5. Planned tasks
-
-### TASK 003 — Unit tests
-
-- Install and configure Vitest.
-- Write tests for timeValidation().
-- Cover valid and invalid time ranges.
-- Verify that tests detect deliberately introduced defects.
 
 ### TASK 004 — Additional booking rules
 
@@ -148,10 +156,9 @@ The planned task sequence may change as the project develops.
 
 ## 7. Next action
 
-Finish TASK 002 with Codex.
+1. Check `git status` and confirm the reviewed validator is saved.
+2. Commit the TASK 002 validator together with this updated project log (without unrelated changes).
+3. Begin TASK 003 with Codex: add Vitest and implement unit tests step by step.
+4. Once the tests pass, record their actual result and commit ID in this log.
 
-After code review:
-1. Verify the implementation.
-2. Run npm run build.
-3. Commit the completed validator.
-4. Start TASK 003 — Vitest unit tests.
+Keep `AGENTS.md` aligned with TASK 003 when starting the new task.
