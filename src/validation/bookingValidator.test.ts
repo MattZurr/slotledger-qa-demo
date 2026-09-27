@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { timeValidation } from './bookingValidator';
+import { canCreateBooking, timeValidation } from './bookingValidator';
+import type { User } from '../models/user';
 
 describe('timeValidation', () => { 
     it('accepts a valid same-day time range', () => { 
@@ -52,5 +53,16 @@ describe('timeValidation', () => {
     });
     it('rejects extra space', () => { 
         expect(timeValidation('09:00', '17:00 ')).toBe(false);
+    });
+});
+
+describe('canCreateBooking', () => { 
+    it('allows a user with the booker role to create a booking', () => { 
+        const user: User = { id: 1, name: 'Alice', role: 'booker' };
+        expect(canCreateBooking(user)).toBe(true);
+    });
+    it('does not allow a user with the viewer role to create a booking', () => { 
+        const user: User = { id: 2, name: 'Bob', role: 'viewer' };
+        expect(canCreateBooking(user)).toBe(false);
     });
 });

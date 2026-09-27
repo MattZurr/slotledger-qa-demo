@@ -1,3 +1,5 @@
+import type { User } from '../models/user';
+
 export function timeValidation(
     startTime: string, 
     endTime: string
@@ -30,4 +32,8 @@ export function timeValidation(
     return false;
   }
   return startTotalMinutes < endTotalMinutes;
+}
+
+export function canCreateBooking(user: User): boolean {
+  return user.role === 'booker';
 }

@@ -96,7 +96,7 @@ Verification:
 - Automated unit tests were subsequently added and verified in TASK 003.
 - The correct strict comparison (`<`) was restored after the TASK 003 negative check; the validator matches its committed implementation.
 
-## 4. Latest completed task
+## 4. Latest completed tasks
 
 ### TASK 003 — Unit tests for booking time validation
 
@@ -118,13 +118,34 @@ Verification:
 - Codex verified that `<` was restored and reran tests and build successfully before the commit.
 - Commit review confirmed that the tested files were committed and the working tree was clean before this log update.
 
+### TASK 004A — User permission validation
+
+Status: Implementation and tests completed (2026-09-27); commit pending
+
+Completed:
+- Added `canCreateBooking(user: User): boolean` in `src/validation/bookingValidator.ts`.
+- A user with the `booker` role can create a booking (`true`); a user with the `viewer` role cannot (`false`).
+- The function checks only the role and does not modify the user object.
+- Added two Vitest tests, one for each role, with independent user objects inside each test.
+
+Verification:
+- Codex reviewed the implementation and both role tests.
+- Codex ran `npm.cmd run test:run`: 19/19 tests passed (17 time-validation tests and 2 permission tests).
+- Codex ran `npm.cmd run build`: TypeScript checking and the Vite build passed.
+- The viewer test description was subsequently clarified to name the specific role; test data and assertions were unchanged.
+
+Learning notes:
+- `import type` imports the User type for TypeScript checking.
+- Strict equality returns a boolean directly.
+- `const` does not prevent changes to object properties; separate test data keeps tests independent.
+
 ## 5. Planned tasks
 
 ### TASK 004 — Additional booking rules
 
-Status: Next / not started
+Status: In progress; TASK 004A completed, remaining rules not started
 
-- Validate user permissions.
+- Validate user permissions — completed in TASK 004A.
 - Check room availability.
 - Reject overlapping bookings.
 
@@ -168,8 +189,7 @@ The planned task sequence may change as the project develops.
 
 ## 7. Next action
 
-1. Review and commit this TASK 003 project log update with the owner's approval.
-2. Align `AGENTS.md` with the completed TASK 003 and next TASK 004 when authorized.
-3. Agree on the first small TASK 004 rule and its acceptance criteria before implementation.
+1. Review and commit the TASK 004A function, tests and this project log update.
+2. Agree on acceptance criteria for room availability before implementing the next rule.
 
 TASK 004 remains limited to user permissions, room availability and overlapping bookings.
