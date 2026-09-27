@@ -62,35 +62,36 @@ When asked to review code:
 
 Read docs/PROJECT_LOG.md before proposing the next development task.
 
-## Recently completed task
 
-TASK 002 — Booking time validation: implementation and Codex code review completed.
+## Recently completed tasks
 
-File: `src/validation/bookingValidator.ts`  
-Function: `timeValidation(startTime: string, endTime: string): boolean`
+TASK 002 — Booking time validation.
+- Implemented timeValidation() in src/validation/bookingValidator.ts.
+- Validates HH:mm format, hours 00–23 and minutes 00–59.
+- Requires the end time to be later than the start time on the same day.
 
-The function is intended to accept only valid `HH:mm` values (hours 00–23, minutes 00–59), and return `true` only when the end time is later than the start time on the same day. Codex reported that temporary debugging code was removed and `npm run build` succeeded.
-
-**Verification boundary:** TASK 002 has not yet been covered by automated unit tests. The validator's Git commit was still pending in the most recently supplied project log. Check the actual repository state rather than assuming it has been committed.
+TASK 003 — Vitest unit tests.
+- Added 17 unit tests for timeValidation().
+- According to PROJECT_LOG.md, all 17 tests and the production build passed.
+- A controlled change from < to <= caused the equal-times test to fail.
+- Restored the correct implementation.
+- Committed as e1d63d3.
 
 ## Current task
 
-TASK 003 — Unit tests for booking time validation (next; not yet verified as started).
+TASK 004 — Additional booking rules.
 
-Goal: write and run the first TypeScript unit tests for `timeValidation()` using Vitest.
+Implement incrementally:
+1. User permissions.
+2. Room availability.
+3. Overlapping booking detection.
 
-Work incrementally with the owner:
-1. Inspect the actual repository and `docs/PROJECT_LOG.md` before suggesting commands. Check whether Vitest is already installed; do not reinstall it unnecessarily.
-2. With explicit permission, help configure Vitest and the `test` / `test:run` npm scripts if missing.
-3. Guide the owner to create `src/validation/bookingValidator.test.ts` and independently implement tests.
-4. Cover: valid same-day ranges, an end time earlier than the start, identical times, crossing midnight, one-minute boundaries, invalid hour/minute values, and malformed `HH:mm` input.
-5. After the initial tests pass, guide a controlled negative check (e.g., temporarily change `<` to `<=`), confirm the appropriate test fails, and restore the correct implementation.
-6. Run `npm run test:run` and `npm run build`; review failures, test readability and edge cases before proposing a commit.
-7. Once verified, propose updates to `docs/PROJECT_LOG.md` and a focused commit. Do not commit or modify the project log without the owner's explicit approval.
+Begin with user permissions only. Agree on the acceptance criteria
+before implementing each subsequent rule.
 
-Treat tests as not yet written or passed until confirmed by actual repository contents and test output. Continue to give hints before complete solutions and avoid unrelated feature development.
-
-After TASK 003, consult the project log for the agreed scope of TASK 004.
+Guide the owner through the implementation and unit tests.
+Do not write complete solutions or modify files without permission.
+Read docs/PROJECT_LOG.md and inspect the actual source code first.
 
 ## Important
 
