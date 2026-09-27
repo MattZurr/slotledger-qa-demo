@@ -21,9 +21,9 @@ Current:
 - Vite
 - HTML and CSS
 - Git
+- Vitest
 
 Planned:
-- Vitest
 - Playwright
 - GitHub Actions
 
@@ -68,7 +68,10 @@ Commit:
 
 ### TASK 002 — Booking time validation
 
-Status: Completed (implementation reviewed; Git commit pending)
+Status: Completed and committed
+
+Commit:
+`e1f0042` — feat: complete booking time validation
 
 File:
 - `src/validation/bookingValidator.ts`
@@ -90,27 +93,36 @@ Completed:
 
 Verification:
 - Codex reported TASK 002 implementation ready after review.
-- Automated unit tests have **not** been added yet; they are TASK 003.
-- The validator was still shown as an untracked file (`U`) in the supplied screenshot. Commit it after checking `git status`.
+- Automated unit tests were subsequently added and verified in TASK 003.
+- The correct strict comparison (`<`) was restored after the TASK 003 negative check; the validator matches its committed implementation.
 
-## 4. Current task
+## 4. Latest completed task
 
 ### TASK 003 — Unit tests for booking time validation
 
-Status: Next / not started
+Status: Completed and committed (2026-09-27)
 
-Goal:
-- Install and configure Vitest.
-- Create `src/validation/bookingValidator.test.ts`.
-- Write tests for `timeValidation()` covering valid times, equal times, end-before-start, midnight crossing, invalid hour/minute ranges and invalid `HH:mm` format.
-- Confirm the tests can detect a deliberately introduced comparison defect, then restore the correct implementation.
-- Run `npm run test:run` and `npm run build` before committing.
+Commit:
+`e1d63d3` — test: add booking time validation tests
 
-Do not claim the validator is covered by automated tests until these tests have actually run.
+Completed:
+- Added Vitest and the `test` / `test:run` npm scripts.
+- Created `src/validation/bookingValidator.test.ts` with 17 tests covering valid same-day ranges, equal times, end-before-start, midnight crossing, one-minute boundaries, invalid hour/minute ranges and malformed input.
+- Reviewed test data so separator, missing-input and extra-space cases express the intended checks.
+- The commit includes package.json, package-lock.json, the test file and expanded .gitignore rules.
+
+Verification:
+- Codex ran `npm.cmd run test:run`: 1 test file passed, 17/17 tests passed.
+- Codex ran `npm.cmd run build`: TypeScript checking and the Vite build passed.
+- The owner reported that temporarily changing `<` to `<=` caused the equal-times test to fail as expected.
+- Codex verified that `<` was restored and reran tests and build successfully before the commit.
+- Commit review confirmed that the tested files were committed and the working tree was clean before this log update.
 
 ## 5. Planned tasks
 
 ### TASK 004 — Additional booking rules
+
+Status: Next / not started
 
 - Validate user permissions.
 - Check room availability.
@@ -156,9 +168,8 @@ The planned task sequence may change as the project develops.
 
 ## 7. Next action
 
-1. Check `git status` and confirm the reviewed validator is saved.
-2. Commit the TASK 002 validator together with this updated project log (without unrelated changes).
-3. Begin TASK 003 with Codex: add Vitest and implement unit tests step by step.
-4. Once the tests pass, record their actual result and commit ID in this log.
+1. Review and commit this TASK 003 project log update with the owner's approval.
+2. Align `AGENTS.md` with the completed TASK 003 and next TASK 004 when authorized.
+3. Agree on the first small TASK 004 rule and its acceptance criteria before implementation.
 
-Keep `AGENTS.md` aligned with TASK 003 when starting the new task.
+TASK 004 remains limited to user permissions, room availability and overlapping bookings.
