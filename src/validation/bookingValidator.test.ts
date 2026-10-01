@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { canCreateBooking, timeValidation } from './bookingValidator';
+import { canCreateBooking, timeValidation, roomExists } from './bookingValidator';
 import type { User } from '../models/user';
+import type { Room } from '../models/room';
 
 describe('timeValidation', () => { 
     it('accepts a valid same-day time range', () => { 
@@ -64,5 +65,26 @@ describe('canCreateBooking', () => {
     it('does not allow a user with the viewer role to create a booking', () => { 
         const user: User = { id: 2, name: 'Bob', role: 'viewer' };
         expect(canCreateBooking(user)).toBe(false);
+    });
+});
+
+describe('roomExists', () => { 
+    it('returns true if the room exists', () => { 
+        const rooms: Room[] = [
+            { id: 1, name: 'Room A' , capacity: 10 },
+            { id: 2, name: 'Room B' , capacity: 20 }
+        ];
+        expect(roomExists(2, rooms)).toBe(true);
+    });
+    it('returns false if the room does not exist', () => { 
+        const rooms: Room[] = [
+            { id: 1, name: 'Room A' , capacity: 10 },
+            { id: 2, name: 'Room B' , capacity: 20 }
+        ];
+        expect(roomExists(3, rooms)).toBe(false);
+    });
+    it('returns false if the rooms array is empty', () => { 
+        const rooms: Room[] = [];
+        expect(roomExists(1, rooms)).toBe(false);
     });
 });

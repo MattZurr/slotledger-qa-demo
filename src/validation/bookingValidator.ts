@@ -1,4 +1,5 @@
 import type { User } from '../models/user';
+import type { Room } from '../models/room';
 
 export function timeValidation(
     startTime: string, 
@@ -36,4 +37,13 @@ export function timeValidation(
 
 export function canCreateBooking(user: User): boolean {
   return user.role === 'booker';
+}
+
+export function roomExists(roomId: number, rooms: Room[]): boolean {
+  return rooms.some(room => room.id === roomId);
+}
+
+export function roomOverlap(startTime: string, endTime: string, roomId: number, bookings: { roomId: number; startTime: string; endTime: string }[]): boolean { 
+  const startParts = startTime.split(':');
+  const endParts = endTime.split(':');
 }
