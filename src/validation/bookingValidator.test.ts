@@ -1,90 +1,253 @@
-import { describe, it, expect } from 'vitest';
-import { canCreateBooking, timeValidation, roomExists } from './bookingValidator';
-import type { User } from '../models/user';
-import type { Room } from '../models/room';
+import { describe, it, expect } from "vitest";
+import {
+  canCreateBooking,
+  timeValidation,
+  roomExists,
+  roomOverlap,
+} from "./bookingValidator";
+import type { User } from "../models/user";
+import type { Room } from "../models/room";
+import type { Booking } from "../models/booking";
 
-describe('timeValidation', () => { 
-    it('accepts a valid same-day time range', () => { 
-        expect(timeValidation('09:00', '17:00')).toBe(true);
-    });
-    it('rejects an invalid time format', () => { 
-        expect(timeValidation('9:00', '17:00')).toBe(false);
-    });
-    it('rejects the same start and end time', () => { 
-        expect(timeValidation('09:00', '09:00')).toBe(false);
-    });
-    it('rejects the end time before the start time', () => { 
-        expect(timeValidation('17:00', '09:00')).toBe(false);
-    });
-    it('rejects bookings crossing midnight', () => { 
-        expect(timeValidation('23:00', '01:00')).toBe(false);
-    });
-    it('accepts a one minute case1', () => { 
-        expect(timeValidation('00:00', '00:01')).toBe(true);
-    });
-    it('accepts a one minute case2', () => { 
-        expect(timeValidation('23:58', '23:59')).toBe(true);
-    });
-    it('accepts a one-minute booking across an hour boundary', () => { 
-        expect(timeValidation('09:59', '10:00')).toBe(true);
-    });
-    it('rejects out-of-range hours', () => { 
-        expect(timeValidation('24:00', '25:00')).toBe(false);
-    });
-    it('rejects an out-of-range end hour', () => { 
-        expect(timeValidation('09:00', '24:00')).toBe(false);
-    });
-    it('rejects an out-of-range start minute', () => { 
-        expect(timeValidation('09:60', '11:00')).toBe(false);
-    });
-    it('rejects an out-of-range end minute', () => { 
-        expect(timeValidation('09:00', '10:60')).toBe(false);
-    });
-    it('rejects lack of minutes', () => { 
-        expect(timeValidation('09:00', '17:0')).toBe(false);
-    });
-    it('rejects wrong separator', () => { 
-        expect(timeValidation('09-00', '17:00')).toBe(false);
-    });
-    it('rejects letters instead of numbers', () => { 
-        expect(timeValidation('ab:cd', '17:00')).toBe(false);
-    });
-    it('rejects lack of time', () => { 
-        expect(timeValidation('', '17:00')).toBe(false);
-    });
-    it('rejects extra space', () => { 
-        expect(timeValidation('09:00', '17:00 ')).toBe(false);
-    });
+describe("timeValidation", () => {
+  it("accepts a valid same-day time range", () => {
+    expect(timeValidation("09:00", "17:00")).toBe(true);
+  });
+  it("rejects an invalid time format", () => {
+    expect(timeValidation("9:00", "17:00")).toBe(false);
+  });
+  it("rejects the same start and end time", () => {
+    expect(timeValidation("09:00", "09:00")).toBe(false);
+  });
+  it("rejects the end time before the start time", () => {
+    expect(timeValidation("17:00", "09:00")).toBe(false);
+  });
+  it("rejects bookings crossing midnight", () => {
+    expect(timeValidation("23:00", "01:00")).toBe(false);
+  });
+  it("accepts a one minute case1", () => {
+    expect(timeValidation("00:00", "00:01")).toBe(true);
+  });
+  it("accepts a one minute case2", () => {
+    expect(timeValidation("23:58", "23:59")).toBe(true);
+  });
+  it("accepts a one-minute booking across an hour boundary", () => {
+    expect(timeValidation("09:59", "10:00")).toBe(true);
+  });
+  it("rejects out-of-range hours", () => {
+    expect(timeValidation("24:00", "25:00")).toBe(false);
+  });
+  it("rejects an out-of-range end hour", () => {
+    expect(timeValidation("09:00", "24:00")).toBe(false);
+  });
+  it("rejects an out-of-range start minute", () => {
+    expect(timeValidation("09:60", "11:00")).toBe(false);
+  });
+  it("rejects an out-of-range end minute", () => {
+    expect(timeValidation("09:00", "10:60")).toBe(false);
+  });
+  it("rejects lack of minutes", () => {
+    expect(timeValidation("09:00", "17:0")).toBe(false);
+  });
+  it("rejects wrong separator", () => {
+    expect(timeValidation("09-00", "17:00")).toBe(false);
+  });
+  it("rejects letters instead of numbers", () => {
+    expect(timeValidation("ab:cd", "17:00")).toBe(false);
+  });
+  it("rejects lack of time", () => {
+    expect(timeValidation("", "17:00")).toBe(false);
+  });
+  it("rejects extra space", () => {
+    expect(timeValidation("09:00", "17:00 ")).toBe(false);
+  });
 });
 
-describe('canCreateBooking', () => { 
-    it('allows a user with the booker role to create a booking', () => { 
-        const user: User = { id: 1, name: 'Alice', role: 'booker' };
-        expect(canCreateBooking(user)).toBe(true);
-    });
-    it('does not allow a user with the viewer role to create a booking', () => { 
-        const user: User = { id: 2, name: 'Bob', role: 'viewer' };
-        expect(canCreateBooking(user)).toBe(false);
-    });
+describe("canCreateBooking", () => {
+  it("allows a user with the booker role to create a booking", () => {
+    const user: User = { id: 1, name: "Alice", role: "booker" };
+    expect(canCreateBooking(user)).toBe(true);
+  });
+  it("does not allow a user with the viewer role to create a booking", () => {
+    const user: User = { id: 2, name: "Bob", role: "viewer" };
+    expect(canCreateBooking(user)).toBe(false);
+  });
 });
 
-describe('roomExists', () => { 
-    it('returns true if the room exists', () => { 
-        const rooms: Room[] = [
-            { id: 1, name: 'Room A' , capacity: 10 },
-            { id: 2, name: 'Room B' , capacity: 20 }
-        ];
-        expect(roomExists(2, rooms)).toBe(true);
-    });
-    it('returns false if the room does not exist', () => { 
-        const rooms: Room[] = [
-            { id: 1, name: 'Room A' , capacity: 10 },
-            { id: 2, name: 'Room B' , capacity: 20 }
-        ];
-        expect(roomExists(3, rooms)).toBe(false);
-    });
-    it('returns false if the rooms array is empty', () => { 
-        const rooms: Room[] = [];
-        expect(roomExists(1, rooms)).toBe(false);
-    });
+describe("roomExists", () => {
+  it("returns true if the room exists", () => {
+    const rooms: Room[] = [
+      { id: 1, name: "Room A", capacity: 10 },
+      { id: 2, name: "Room B", capacity: 20 },
+    ];
+    expect(roomExists(2, rooms)).toBe(true);
+  });
+  it("returns false if the room does not exist", () => {
+    const rooms: Room[] = [
+      { id: 1, name: "Room A", capacity: 10 },
+      { id: 2, name: "Room B", capacity: 20 },
+    ];
+    expect(roomExists(3, rooms)).toBe(false);
+  });
+  it("returns false if the rooms array is empty", () => {
+    const rooms: Room[] = [];
+    expect(roomExists(1, rooms)).toBe(false);
+  });
+});
+
+describe("roomOverlap", () => {
+  it("returns true if there is an overlapping booking", () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("09:30", "10:30", 1, bookings, "2024-06-01")).toBe(true);
+  });
+  it("returns true if there is an overlapping booking that starts before and ends after the new booking", () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "11:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("09:30", "10:30", 1, bookings, "2024-06-01")).toBe(true);
+  });
+  it("returns true if there is an overlapping booking that starts after and ends before the new booking", () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "09:30",
+        endTime: "10:30",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("09:00", "11:00", 1, bookings, "2024-06-01")).toBe(true);
+  });
+  it("returns false if the end time of the new booking is the same as the start time of an existing booking", () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "10:00",
+        endTime: "11:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-01")).toBe(false);
+  });
+  it("returns false if the start time of the new booking is the same as the end time of an existing booking", () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("10:00", "11:00", 1, bookings, "2024-06-01")).toBe(false);
+  });
+  it('returns false if the bookings are on different dates', () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-02")).toBe(false);
+  });
+  it('returns false if the bookings are for different rooms', () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("09:00", "10:00", 2, bookings, "2024-06-01")).toBe(false);
+  });
+  it('returns false if there are no bookings', () => {
+    const bookings: Booking[] = [];
+    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-01")).toBe(false);
+  });
+  it('returns true for identical time ranges in the same room on the same date', () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "10:00",
+        endTime: "11:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("10:00", "11:00", 1, bookings, "2024-06-01")).toBe(true);
+  });
+  it('returns true when only the second existing booking overlaps with the new booking', () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+      {
+        id: 2,
+        roomId: 1,
+        userId: 2,
+        date: "2024-06-01",
+        startTime: "10:00",
+        endTime: "11:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      }
+    ];
+    expect(roomOverlap("10:30", "11:30", 1, bookings, "2024-06-01")).toBe(true);
+  });
+  it('returns false when the new bookings are completely before/after existing bookings', () => {
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 1,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "10:00",
+        endTime: "11:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    expect(roomOverlap("08:00", "09:00", 1, bookings, "2024-06-01")).toBe(false);
+    expect(roomOverlap("12:00", "13:00", 1, bookings, "2024-06-01")).toBe(false);
+  });
 });
