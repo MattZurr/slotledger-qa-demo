@@ -1,6 +1,6 @@
 import type { User } from "../models/user";
 import type { Room } from "../models/room";
-import type { Booking } from "../models/booking";
+import type { Booking, CreateBookingInput } from "../models/booking";
 
 export function timeValidation(startTime: string, endTime: string): boolean {
   if (
@@ -75,17 +75,13 @@ export function roomOverlap(
 }
 
 export function createBooking(
-  startTime: string,
-  endTime: string,
-  userId: number,
-  roomId: number,
+  input: CreateBookingInput,
   bookings: Booking[],
+  user: User,
+  rooms: Room[],
 ): Booking[] {
   const newBooking: Booking = {
-    startTime,
-    endTime,
-    userId,
-    roomId,
+    ...input,
   };
   return [...bookings, newBooking];
 }

@@ -15,3 +15,10 @@ export interface CreateBookingInput {
   startTime: string;
   endTime: string;
 }
+
+export type CreateBookingResult =
+  | { success: true; booking: Booking }
+  | {
+      success: false;
+      error: "NO_PERMISSION" | "ROOM_NOT_FOUND" | "INVALID_TIME" | "ROOM_OVERLAP";
+    };

@@ -228,7 +228,7 @@ Decision:
 
 ### TASK 005 — Booking creation
 
-Status: In progress — TASK 005A contract discussion started (2026-10-05); no implementation started.
+Status: In progress — TASK 005A contract decisions agreed (2026-10-06); an incomplete implementation sketch exists.
 
 Goals:
 - Define the booking-creation contract.
@@ -242,10 +242,32 @@ Goals:
 
 TASK 005 should be split into small subtasks before implementation.
 
-Current discussion:
-- TASK 005A covers the booking-creation contract and acceptance criteria only.
-- The first exercise is to identify which data, in addition to `CreateBookingInput`, the function needs to use the existing validators.
-- Inputs, return type/error behavior, ID and `createdAt` generation, and minimum test cases are still to be agreed with the owner.
+Agreed contract (2026-10-06):
+- Inputs: `input: CreateBookingInput`, `bookings: Booking[]`, `user: User`, `rooms: Room[]`.
+- Creation returns a single booking, not an updated booking list. Updating the list and persistence are separate responsibilities.
+- Return type: `CreateBookingResult`, with `{ success: true; booking: Booking }` or `{ success: false; error: ... }`.
+- Error codes: `NO_PERMISSION`, `ROOM_NOT_FOUND`, `INVALID_TIME`, `ROOM_OVERLAP`.
+- Reuse `canCreateBooking`, `roomExists`, `timeValidation` and `roomOverlap`; validate times before checking overlap.
+- Generate ID as the highest existing booking ID plus 1; use 1 for an empty list. Do not use array length plus 1.
+- Generate `createdAt` with `new Date().toISOString()` after validation succeeds.
+- A booking belongs to the supplied `user`: remove `userId` from `CreateBookingInput` and set the resulting `Booking.userId` from `user.id`. Keep `userId` in `Booking`.
+- Do not add persistence or UI yet.
+
+Minimum test acceptance criteria discussed:
+- Successful creation returns a complete booking with the input fields, `user.id`, generated ID and ISO creation timestamp.
+- Each of the four validation failures returns its corresponding error code.
+- ID generation handles an empty booking list and gaps in existing IDs.
+- The input booking array remains unchanged.
+
+Actual code at handoff (2026-10-06):
+- `CreateBookingResult` has been added to `src/models/booking.ts`.
+- `createBooking` accepts the four agreed inputs, but still returns `Booking[]` and contains only an incomplete `{ ...input }` booking followed by the old array return.
+- `CreateBookingInput` still contains `userId`; its removal has been agreed but not implemented.
+- The sketch is not build-ready: the new booking lacks `id` and `createdAt`, and `user` / `rooms` are not used yet.
+- No creation tests have been added. Existing validator implementations and tests remain unchanged.
+- Tests and build were not run during this session because `node_modules` is absent. Do not report the earlier TASK 004 verification as verification of this sketch.
+- Learning covered: interfaces describe types without creating values; object/array spread; function arguments versus booking fields; union types and the optional leading `|`.
+- This handoff preserves unfinished work intentionally; continue with small mentoring steps, not a complete automatic implementation.
 
 ### TASK 006 — User interface
 
@@ -284,6 +306,9 @@ The planned task sequence may change as the project develops.
 
 ## 7. Next action
 
-1. Continue TASK 005A by identifying the inputs needed to call the existing validators.
-2. Agree on the complete booking-creation contract and minimum unit-test acceptance criteria before implementation.
-3. Do not add persistence or UI until the core booking-creation behavior is reviewed and unit-tested.
+1. Remove `userId` only from `CreateBookingInput`; retain it in `Booking`.
+2. Import `CreateBookingResult` and change the creation function return type when implementing the agreed result branches.
+3. Implement validation incrementally, starting with the permission check and its `NO_PERMISSION` result. Give hints before complete solutions.
+4. Add the remaining validators, then generate ID / `createdAt` and return a successful single-booking result.
+5. Add creation tests incrementally and run tests / build once dependencies are available; dependency installation requires explicit permission.
+6. Keep persistence and UI out of scope until the core logic is reviewed and tested.
