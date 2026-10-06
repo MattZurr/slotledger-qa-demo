@@ -63,7 +63,7 @@ export function roomOverlap(
 ): boolean {
   return bookings.some((booking) => {
     if (
-      booking.roomId !== roomId || 
+      booking.roomId !== roomId ||
       booking.date !== date ||
       endTime <= booking.startTime ||
       startTime >= booking.endTime
@@ -72,4 +72,20 @@ export function roomOverlap(
     }
     return true;
   });
+}
+
+export function createBooking(
+  startTime: string,
+  endTime: string,
+  userId: number,
+  roomId: number,
+  bookings: Booking[],
+): Booking[] {
+  const newBooking: Booking = {
+    startTime,
+    endTime,
+    userId,
+    roomId,
+  };
+  return [...bookings, newBooking];
 }

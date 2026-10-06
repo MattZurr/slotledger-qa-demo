@@ -163,7 +163,10 @@ Learning notes:
 
 ### TASK 004C — Booking overlap detection
 
-Status: Implementation and tests completed (2026-10-04); final commit status should be verified in Git
+Status: Completed and committed (implementation and tests completed 2026-10-04; committed 2026-10-05)
+
+Commit:
+`098f492` — feat: complete booking overlap validation and prepare TASK 005
 
 Function:
 
@@ -206,7 +209,12 @@ Independent review (2026-10-05):
 
 TASK 004 — Additional booking rules
 
-Status: Implementation and unit tests completed; final Git commit status must be verified before starting TASK 005 changes.
+Status: Completed and committed (2026-10-05).
+
+Final TASK 004 commit:
+`098f492` — feat: complete booking overlap validation and prepare TASK 005
+
+This commit includes the overlap implementation, unit tests and documentation preparing TASK 005. The working tree was clean immediately after the commit.
 
 Completed:
 - TASK 004A — user permissions
@@ -220,7 +228,7 @@ Decision:
 
 ### TASK 005 — Booking creation
 
-Status: Next
+Status: In progress — TASK 005A contract discussion started (2026-10-05); no implementation started.
 
 Goals:
 - Define the booking-creation contract.
@@ -233,6 +241,11 @@ Goals:
 - Add local persistence only after core creation logic is reviewed and verified.
 
 TASK 005 should be split into small subtasks before implementation.
+
+Current discussion:
+- TASK 005A covers the booking-creation contract and acceptance criteria only.
+- The first exercise is to identify which data, in addition to `CreateBookingInput`, the function needs to use the existing validators.
+- Inputs, return type/error behavior, ID and `createdAt` generation, and minimum test cases are still to be agreed with the owner.
 
 ### TASK 006 — User interface
 
@@ -260,6 +273,7 @@ The planned task sequence may change as the project develops.
 ## 6. Development principles
 
 - The owner writes the code independently whenever practical.
+- The owner runs Git commands to practice using Git. AI provides commands and explains their purpose and expected results; it executes Git commands only when explicitly asked.
 - AI acts as a mentor and code reviewer.
 - Each task should have clear acceptance criteria.
 - Review and test changes before committing.
@@ -270,7 +284,6 @@ The planned task sequence may change as the project develops.
 
 ## 7. Next action
 
-1. Check `git status` and verify whether TASK 004C and the latest documentation are already committed.
-2. If TASK 004 changes are still uncommitted, review the staged files and create a focused TASK 004 commit before changing TASK 005 code.
-3. Start TASK 005A by agreeing on the booking-creation contract and acceptance criteria, without implementing code at this stage.
-4. Do not add persistence or UI until the core booking-creation behavior is reviewed and unit-tested.
+1. Continue TASK 005A by identifying the inputs needed to call the existing validators.
+2. Agree on the complete booking-creation contract and minimum unit-test acceptance criteria before implementation.
+3. Do not add persistence or UI until the core booking-creation behavior is reviewed and unit-tested.
