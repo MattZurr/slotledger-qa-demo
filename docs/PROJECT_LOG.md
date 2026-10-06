@@ -259,7 +259,7 @@ Minimum test acceptance criteria discussed:
 - ID generation handles an empty booking list and gaps in existing IDs.
 - The input booking array remains unchanged.
 
-Actual code at handoff (2026-10-06):
+Earlier handoff before continuing on this computer (2026-10-06):
 - `CreateBookingResult` has been added to `src/models/booking.ts`.
 - `createBooking` accepts the four agreed inputs, but still returns `Booking[]` and contains only an incomplete `{ ...input }` booking followed by the old array return.
 - `CreateBookingInput` still contains `userId`; its removal has been agreed but not implemented.
@@ -268,6 +268,18 @@ Actual code at handoff (2026-10-06):
 - Tests and build were not run during this session because `node_modules` is absent. Do not report the earlier TASK 004 verification as verification of this sketch.
 - Learning covered: interfaces describe types without creating values; object/array spread; function arguments versus booking fields; union types and the optional leading `|`.
 - This handoff preserves unfinished work intentionally; continue with small mentoring steps, not a complete automatic implementation.
+
+Latest handoff after the mentoring session (2026-10-06):
+- Removed `userId` from `CreateBookingInput`; `Booking` retains it and creation assigns it from `user.id`.
+- Imported `CreateBookingResult`, changed the function return type and now return `{ success: true, booking: newBooking }`.
+- Added an early permission check using `canCreateBooking(user)` and the `NO_PERMISSION` result.
+- The current temporary signature is `(input, id, createdAt, bookings, user, rooms)`. ID and timestamp are still supplied by the caller; this does not yet implement the agreed four-input contract or internal generation.
+- Added the first creation success test, comparing the complete result with `toEqual`, including `userId`.
+- Verification: 34/34 tests passed. Build failed with TS6133 for unused `bookings` and `rooms`; room/time/overlap validation and ID generation remain pending.
+- Updated `AGENTS.md` with the agreed contract, actual progress and continuation steps.
+- Learning covered: a single acting `User` versus a `Room[]` catalogue; early returns; business rejection versus a failing test; test preparation/action/assertion; whole-object comparison.
+- The owner accepted editor suggestions for the test and wants to understand it. Suggested exercise, not yet implemented: use different user, room and booking IDs (currently all are 1) and explain which expected fields must change.
+- This is intentionally unfinished work for transfer to another computer. Continue mentoring in small steps; do not automatically complete the implementation.
 
 ### TASK 006 — User interface
 
@@ -306,9 +318,9 @@ The planned task sequence may change as the project develops.
 
 ## 7. Next action
 
-1. Remove `userId` only from `CreateBookingInput`; retain it in `Booking`.
-2. Import `CreateBookingResult` and change the creation function return type when implementing the agreed result branches.
-3. Implement validation incrementally, starting with the permission check and its `NO_PERMISSION` result. Give hints before complete solutions.
-4. Add the remaining validators, then generate ID / `createdAt` and return a successful single-booking result.
+1. Resume understanding the success test; let the owner use distinct user, room and booking IDs and adjust the expected result independently.
+2. Add a creation test for a `viewer`, expecting `{ success: false, error: "NO_PERMISSION" }`.
+3. Implement room existence, time and overlap validation incrementally with corresponding tests. Give hints before complete solutions.
+4. Generate ID / `createdAt` inside the function and update test calls to the agreed four-input signature.
 5. Add creation tests incrementally and run tests / build once dependencies are available; dependency installation requires explicit permission.
 6. Keep persistence and UI out of scope until the core logic is reviewed and tested.

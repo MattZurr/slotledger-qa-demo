@@ -1,6 +1,6 @@
 import type { User } from "../models/user";
 import type { Room } from "../models/room";
-import type { Booking, CreateBookingInput } from "../models/booking";
+import type { Booking, CreateBookingInput, CreateBookingResult } from "../models/booking";
 
 export function timeValidation(startTime: string, endTime: string): boolean {
   if (
@@ -76,12 +76,20 @@ export function roomOverlap(
 
 export function createBooking(
   input: CreateBookingInput,
+  id: number,
+  createdAt: string,
   bookings: Booking[],
   user: User,
   rooms: Room[],
-): Booking[] {
+): CreateBookingResult {
+  if (!canCreateBooking(user)) {
+    return { success: false, error: "NO_PERMISSION" };
+  }
   const newBooking: Booking = {
     ...input,
+    id,
+    createdAt,
+    userId: user.id,
   };
-  return [...bookings, newBooking];
+  return { success: true, booking: newBooking };
 }

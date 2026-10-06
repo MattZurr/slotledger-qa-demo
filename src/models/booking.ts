@@ -10,7 +10,6 @@ export interface Booking {
 
 export interface CreateBookingInput {
   roomId: number;
-  userId: number;
   date: string;
   startTime: string;
   endTime: string;

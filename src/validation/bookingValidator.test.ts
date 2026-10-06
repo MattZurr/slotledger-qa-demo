@@ -4,6 +4,7 @@ import {
   timeValidation,
   roomExists,
   roomOverlap,
+  createBooking,
 } from "./bookingValidator";
 import type { User } from "../models/user";
 import type { Room } from "../models/room";
@@ -249,5 +250,31 @@ describe("roomOverlap", () => {
     ];
     expect(roomOverlap("08:00", "09:00", 1, bookings, "2024-06-01")).toBe(false);
     expect(roomOverlap("12:00", "13:00", 1, bookings, "2024-06-01")).toBe(false);
+  });
+});
+
+describe("createBooking", () => {
+  it("creates a new booking and returns success", () => {
+    const user: User = { id: 1, name: "Alice", role: "booker" };
+    const rooms: Room[] = [{ id: 1, name: "Room A", capacity: 10 }];
+    const bookings: Booking[] = [];
+    const input = {
+      roomId: 1,
+      date: "2024-06-01",
+      startTime: "09:00",
+      endTime: "10:00",
+    };
+    expect(createBooking(input, 1, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+      success: true,
+      booking: {
+        id: 1,
+        userId: 1,
+        roomId: 1,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      }
+    });
   });
 });

@@ -102,7 +102,8 @@ Completed and committed.
 - Controlled negative check confirmed that the equal-times test detects an incorrect `<=` implementation.
 
 ### TASK 004 — Additional booking rules
-Implementation and tests completed. Final commit/documentation status must be checked in Git before starting TASK 005.
+Completed and committed on 2026-10-05.
+Final commit: `098f492` — feat: complete booking overlap validation and prepare TASK 005.
 
 Implemented:
 
@@ -133,9 +134,37 @@ TASK 005 — Booking creation.
 
 Do not start by implementing the whole task at once.
 
-### First step: agree on TASK 005A
+### TASK 005A — agreed contract (2026-10-06)
 
-TASK 005A covers only the booking-creation contract and acceptance criteria. Implementation begins in subsequent subtasks after these decisions are agreed.
+The contract and minimum acceptance criteria have been agreed. Continue from these decisions rather than restarting contract design.
+
+- Inputs: `input: CreateBookingInput`, `bookings: Booking[]`, `user: User`, `rooms: Room[]`.
+- Return type: `CreateBookingResult`, with `{ success: true; booking: Booking }` or `{ success: false; error: ... }`.
+- Error codes: `NO_PERMISSION`, `ROOM_NOT_FOUND`, `INVALID_TIME`, `ROOM_OVERLAP`.
+- Reuse `canCreateBooking`, `roomExists`, `timeValidation` and `roomOverlap`; validate times before checking overlap.
+- Generate ID as the highest existing booking ID plus 1; use 1 for an empty list. Do not use array length plus 1.
+- Generate `createdAt` with `new Date().toISOString()` after validation succeeds.
+- Remove `userId` from `CreateBookingInput`; set `Booking.userId` from the supplied `user.id`. Keep `userId` in `Booking`.
+- Return a single booking in the success result. Updating the booking list and persistence are separate responsibilities.
+- Do not add persistence or UI yet.
+
+Minimum unit-test acceptance criteria:
+- Successful creation returns a complete booking with the input fields, `user.id`, generated ID and ISO creation timestamp.
+- Each of the four validation failures returns its corresponding error code.
+- ID generation handles an empty booking list and gaps in existing IDs.
+- The input booking array remains unchanged.
+
+### Current implementation and verification (2026-10-06)
+
+- `CreateBookingResult` exists in `src/models/booking.ts`.
+- `CreateBookingInput` no longer contains `userId`; creation sets `Booking.userId` from `user.id`.
+- `createBooking` returns `CreateBookingResult` and rejects users without permission with `NO_PERMISSION` before creating the booking.
+- The temporary signature is `(input, id, createdAt, bookings, user, rooms)`. Passing ID and timestamp is an unfinished deviation from the agreed contract; move their generation inside the function in TASK 005C.
+- One creation success test checks the complete result with `toEqual`. A permission rejection test is still pending.
+- Verification on this computer: 34/34 tests passed; the build failed with TS6133 because `bookings` and `rooms` are not used yet. Remaining validation and ID generation are unfinished.
+- The successful TASK 004 build recorded above does not verify the TASK 005 sketch.
+
+### Next mentoring steps
 
 Before writing code, inspect:
 - `src/models/booking.ts`,
@@ -145,15 +174,13 @@ Before writing code, inspect:
 - `src/validation/bookingValidator.test.ts`,
 - `docs/PROJECT_LOG.md`.
 
-Then agree with the owner on:
-1. The responsibility of the booking-creation function.
-2. Its inputs.
-3. Its return type / error behavior.
-4. Which existing validators it should call.
-5. How booking IDs should be generated at this stage.
-6. How `createdAt` should be generated.
-7. What belongs to creation logic versus persistence.
-8. The minimum unit-test acceptance criteria.
+Continue in small steps, letting the owner implement the code:
+1. Resume the explanation of the success test: the owner accepted editor suggestions and wants to understand the code. Give hints before complete solutions.
+2. Use distinct user, room and booking IDs in the success test (currently all are 1) to detect incorrect field assignments. This exercise is suggested but not implemented yet.
+3. Add a `viewer` test expecting `{ success: false, error: "NO_PERMISSION" }`.
+4. Add room existence, time and overlap validation incrementally with tests. Then generate ID / `createdAt` internally and update the test calls to the agreed four-input signature.
+5. Add creation tests incrementally and run tests / build. Dependency installation, if needed on another computer, requires explicit permission.
+6. Keep persistence and UI out of scope until the core logic is reviewed and tested.
 
 ### TASK 005 constraints
 
@@ -169,10 +196,10 @@ Then agree with the owner on:
 
 ### Planned TASK 005 sequence
 
-The exact design must be agreed before implementation, but the intended progression is:
+The contract above is agreed; the intended progression is:
 
-- TASK 005A — booking creation contract and acceptance criteria (no implementation)
-- TASK 005B — core creation logic and integration with existing validation rules
+- TASK 005A — booking creation contract and acceptance criteria (agreed)
+- TASK 005B — core creation logic and integration with existing validation rules (incomplete sketch exists)
 - TASK 005C — ID and `createdAt` generation
 - TASK 005D — local persistence after the core logic is verified
 
