@@ -228,7 +228,7 @@ Decision:
 
 ### TASK 005 — Booking creation
 
-Status: In progress — TASK 005A contract decisions agreed (2026-10-06); an incomplete implementation sketch exists.
+Status: In progress — TASK 005A contract agreed (2026-10-06); TASK 005B validation integration completed and verified (2026-10-08). TASK 005C internal ID/timestamp generation is next.
 
 Goals:
 - Define the booking-creation contract.
@@ -269,7 +269,7 @@ Earlier handoff before continuing on this computer (2026-10-06):
 - Learning covered: interfaces describe types without creating values; object/array spread; function arguments versus booking fields; union types and the optional leading `|`.
 - This handoff preserves unfinished work intentionally; continue with small mentoring steps, not a complete automatic implementation.
 
-Latest handoff after the mentoring session (2026-10-06):
+Historical handoff after the mentoring session (2026-10-06):
 - Removed `userId` from `CreateBookingInput`; `Booking` retains it and creation assigns it from `user.id`.
 - Imported `CreateBookingResult`, changed the function return type and now return `{ success: true, booking: newBooking }`.
 - Added an early permission check using `canCreateBooking(user)` and the `NO_PERMISSION` result.
@@ -280,6 +280,18 @@ Latest handoff after the mentoring session (2026-10-06):
 - Learning covered: a single acting `User` versus a `Room[]` catalogue; early returns; business rejection versus a failing test; test preparation/action/assertion; whole-object comparison.
 - The owner accepted editor suggestions for the test and wants to understand it. Suggested exercise, not yet implemented: use different user, room and booking IDs (currently all are 1) and explain which expected fields must change.
 - This is intentionally unfinished work for transfer to another computer. Continue mentoring in small steps; do not automatically complete the implementation.
+
+Latest handoff — TASK 005B completed (2026-10-08):
+- Integrated `roomExists()`, `timeValidation()` and `roomOverlap()` into `createBooking()`, alongside the existing permission check.
+- Validation order: permissions, room existence, time validity, overlap. Each rejection returns its corresponding error before booking construction.
+- The success test now uses distinct IDs: user 7, room 12, booking 42, detecting incorrect field assignments.
+- Added creation tests for `NO_PERMISSION`, `ROOM_NOT_FOUND`, `INVALID_TIME` and `ROOM_OVERLAP`. There are now five creation tests.
+- Room, time and overlap tests were observed failing before the corresponding validation was implemented, then passing afterward. Corrected the overlap fixture to use a valid existing range of 09:00–10:00 against a requested 09:30–10:30 for the same room/date.
+- Verification: `npm.cmd run test:run` passed 38/38 tests; `npm.cmd run build` passed. The earlier TS6133 errors are resolved because `bookings` and `rooms` are now used.
+- The temporary signature remains `(input, id, createdAt, bookings, user, rooms)`. Internal generation, the final four-input signature, ID edge-case tests and an explicit input-array immutability test remain pending for core completion.
+- No persistence, UI or new dependencies were added. TASK 005 as a whole is not complete.
+- Learning covered: whole-object assertions, distinct IDs, success/error union variants versus runtime conditions, early returns, incremental failing/passing tests, and required fields in `Booking[]` fixtures.
+- Documentation updated for handoff; commit commands are provided to the owner, who performs the commit.
 
 ### TASK 006 — User interface
 
@@ -318,9 +330,9 @@ The planned task sequence may change as the project develops.
 
 ## 7. Next action
 
-1. Resume understanding the success test; let the owner use distinct user, room and booking IDs and adjust the expected result independently.
-2. Add a creation test for a `viewer`, expecting `{ success: false, error: "NO_PERMISSION" }`.
-3. Implement room existence, time and overlap validation incrementally with corresponding tests. Give hints before complete solutions.
-4. Generate ID / `createdAt` inside the function and update test calls to the agreed four-input signature.
-5. Add creation tests incrementally and run tests / build once dependencies are available; dependency installation requires explicit permission.
-6. Keep persistence and UI out of scope until the core logic is reviewed and tested.
+1. Begin TASK 005C incrementally: generate ID internally as the highest existing ID plus 1, or 1 for an empty list. Add tests for empty lists and gaps in IDs, preferably using unsorted existing IDs.
+2. Generate `createdAt` with `new Date().toISOString()` after validation succeeds and test it; explain clock control if needed.
+3. Remove temporary ID/timestamp parameters as generation moves inside and update calls to `(input, bookings, user, rooms)`.
+4. Add a test confirming that the input booking array and existing entries remain unchanged.
+5. Run tests/build and review the core against the agreed acceptance criteria. Continue mentoring with hints before full solutions; dependency installation requires explicit permission.
+6. Discuss TASK 005D persistence only after core verification. Keep TASK 006 UI out of scope.

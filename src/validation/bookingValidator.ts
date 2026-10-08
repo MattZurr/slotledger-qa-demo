@@ -85,6 +85,15 @@ export function createBooking(
   if (!canCreateBooking(user)) {
     return { success: false, error: "NO_PERMISSION" };
   }
+  if (!roomExists(input.roomId, rooms)) {
+    return { success: false, error: "ROOM_NOT_FOUND" };
+  }
+  if (!timeValidation(input.startTime, input.endTime)) {
+    return { success: false, error: "INVALID_TIME" };
+  }
+  if (roomOverlap(input.startTime, input.endTime, input.roomId, bookings, input.date)) {
+    return { success: false, error: "ROOM_OVERLAP" };
+  }
   const newBooking: Booking = {
     ...input,
     id,

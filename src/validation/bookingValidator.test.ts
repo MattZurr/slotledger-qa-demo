@@ -255,21 +255,21 @@ describe("roomOverlap", () => {
 
 describe("createBooking", () => {
   it("creates a new booking and returns success", () => {
-    const user: User = { id: 1, name: "Alice", role: "booker" };
-    const rooms: Room[] = [{ id: 1, name: "Room A", capacity: 10 }];
+    const user: User = { id: 7, name: "Alice", role: "booker" };
+    const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [];
     const input = {
-      roomId: 1,
+      roomId: 12,
       date: "2024-06-01",
       startTime: "09:00",
       endTime: "10:00",
     };
-    expect(createBooking(input, 1, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+    expect(createBooking(input, 42, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
       success: true,
       booking: {
-        id: 1,
-        userId: 1,
-        roomId: 1,
+        id: 42,
+        userId: 7,
+        roomId: 12,
         date: "2024-06-01",
         startTime: "09:00",
         endTime: "10:00",
@@ -277,4 +277,72 @@ describe("createBooking", () => {
       }
     });
   });
+  it("rejects booking creation for a viewer", () => {
+    const user: User = { id: 7, name: "Bob", role: "viewer" };
+    const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
+    const bookings: Booking[] = [];
+    const input = {
+      roomId: 12,
+      date: "2024-06-01",
+      startTime: "09:00",
+      endTime: "10:00",
+    };
+    expect(createBooking(input, 42, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+      success: false,
+      error: "NO_PERMISSION"
+    });
+  });
+  it("rejects booking creation when the room does not exist", () => {
+    const user: User = { id: 7, name: "Alice", role: "booker" };
+    const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
+    const bookings: Booking[] = [];
+    const input = {
+      roomId: 99,
+      date: "2024-06-01",
+      startTime: "09:00",
+      endTime: "10:00",
+    };
+    expect(createBooking(input, 1, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+      success: false,
+      error: "ROOM_NOT_FOUND"
+    });
+  });
+  it("rejects booking creation for an invalid time range", () => {
+    const user: User = { id: 7, name: "Alice", role: "booker" };
+    const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
+    const bookings: Booking[] = [];
+    const input = {
+      roomId: 12,
+      date: "2024-06-01",
+      startTime: "10:00",
+      endTime: "09:00",
+    };
+    expect(createBooking(input, 1, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+      success: false,
+      error: "INVALID_TIME"
+    });
+  });
+  it("rejects booking creation when the room is already booked", () => {
+    const user: User = { id: 7, name: "Alice", role: "booker" };
+    const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
+    const bookings: Booking[] = [{
+    id: 1,
+    roomId: 12,
+    userId: 1,
+    date: "2024-06-01",
+    startTime: "09:00",
+    endTime: "10:00",
+    createdAt: "2024-06-01T08:00:00Z",
+    }];
+    const input = {
+      roomId: 12,
+      date: "2024-06-01",
+      startTime: "09:30",
+      endTime: "10:30",
+    };
+    expect(createBooking(input, 1, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+      success: false,
+      error: "ROOM_OVERLAP"
+    });
+  })
 });
