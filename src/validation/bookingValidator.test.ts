@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   canCreateBooking,
   timeValidation,
@@ -151,7 +151,9 @@ describe("roomOverlap", () => {
         createdAt: "2024-06-01T08:00:00Z",
       },
     ];
-    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-01")).toBe(false);
+    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-01")).toBe(
+      false,
+    );
   });
   it("returns false if the start time of the new booking is the same as the end time of an existing booking", () => {
     const bookings: Booking[] = [
@@ -165,9 +167,11 @@ describe("roomOverlap", () => {
         createdAt: "2024-06-01T08:00:00Z",
       },
     ];
-    expect(roomOverlap("10:00", "11:00", 1, bookings, "2024-06-01")).toBe(false);
+    expect(roomOverlap("10:00", "11:00", 1, bookings, "2024-06-01")).toBe(
+      false,
+    );
   });
-  it('returns false if the bookings are on different dates', () => {
+  it("returns false if the bookings are on different dates", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -179,9 +183,11 @@ describe("roomOverlap", () => {
         createdAt: "2024-06-01T08:00:00Z",
       },
     ];
-    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-02")).toBe(false);
+    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-02")).toBe(
+      false,
+    );
   });
-  it('returns false if the bookings are for different rooms', () => {
+  it("returns false if the bookings are for different rooms", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -193,13 +199,17 @@ describe("roomOverlap", () => {
         createdAt: "2024-06-01T08:00:00Z",
       },
     ];
-    expect(roomOverlap("09:00", "10:00", 2, bookings, "2024-06-01")).toBe(false);
+    expect(roomOverlap("09:00", "10:00", 2, bookings, "2024-06-01")).toBe(
+      false,
+    );
   });
-  it('returns false if there are no bookings', () => {
+  it("returns false if there are no bookings", () => {
     const bookings: Booking[] = [];
-    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-01")).toBe(false);
+    expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-01")).toBe(
+      false,
+    );
   });
-  it('returns true for identical time ranges in the same room on the same date', () => {
+  it("returns true for identical time ranges in the same room on the same date", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -213,7 +223,7 @@ describe("roomOverlap", () => {
     ];
     expect(roomOverlap("10:00", "11:00", 1, bookings, "2024-06-01")).toBe(true);
   });
-  it('returns true when only the second existing booking overlaps with the new booking', () => {
+  it("returns true when only the second existing booking overlaps with the new booking", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -232,11 +242,11 @@ describe("roomOverlap", () => {
         startTime: "10:00",
         endTime: "11:00",
         createdAt: "2024-06-01T08:00:00Z",
-      }
+      },
     ];
     expect(roomOverlap("10:30", "11:30", 1, bookings, "2024-06-01")).toBe(true);
   });
-  it('returns false when the new bookings are completely before/after existing bookings', () => {
+  it("returns false when the new bookings are completely before/after existing bookings", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -248,12 +258,25 @@ describe("roomOverlap", () => {
         createdAt: "2024-06-01T08:00:00Z",
       },
     ];
-    expect(roomOverlap("08:00", "09:00", 1, bookings, "2024-06-01")).toBe(false);
-    expect(roomOverlap("12:00", "13:00", 1, bookings, "2024-06-01")).toBe(false);
+    expect(roomOverlap("08:00", "09:00", 1, bookings, "2024-06-01")).toBe(
+      false,
+    );
+    expect(roomOverlap("12:00", "13:00", 1, bookings, "2024-06-01")).toBe(
+      false,
+    );
   });
 });
 
 describe("createBooking", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-06-01T08:00:00.000Z"));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("creates a new booking and returns success", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
@@ -264,17 +287,17 @@ describe("createBooking", () => {
       startTime: "09:00",
       endTime: "10:00",
     };
-    expect(createBooking(input, 42, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+    expect(createBooking(input, bookings, user, rooms)).toEqual({
       success: true,
       booking: {
-        id: 42,
+        id: 1,
         userId: 7,
         roomId: 12,
         date: "2024-06-01",
         startTime: "09:00",
         endTime: "10:00",
-        createdAt: "2024-06-01T08:00:00Z",
-      }
+        createdAt: "2024-06-01T08:00:00.000Z",
+      },
     });
   });
   it("rejects booking creation for a viewer", () => {
@@ -287,9 +310,9 @@ describe("createBooking", () => {
       startTime: "09:00",
       endTime: "10:00",
     };
-    expect(createBooking(input, 42, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+    expect(createBooking(input, bookings, user, rooms)).toEqual({
       success: false,
-      error: "NO_PERMISSION"
+      error: "NO_PERMISSION",
     });
   });
   it("rejects booking creation when the room does not exist", () => {
@@ -302,9 +325,9 @@ describe("createBooking", () => {
       startTime: "09:00",
       endTime: "10:00",
     };
-    expect(createBooking(input, 1, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+    expect(createBooking(input, bookings, user, rooms)).toEqual({
       success: false,
-      error: "ROOM_NOT_FOUND"
+      error: "ROOM_NOT_FOUND",
     });
   });
   it("rejects booking creation for an invalid time range", () => {
@@ -317,32 +340,138 @@ describe("createBooking", () => {
       startTime: "10:00",
       endTime: "09:00",
     };
-    expect(createBooking(input, 1, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+    expect(createBooking(input, bookings, user, rooms)).toEqual({
       success: false,
-      error: "INVALID_TIME"
+      error: "INVALID_TIME",
     });
   });
   it("rejects booking creation when the room is already booked", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
-    const bookings: Booking[] = [{
-    id: 1,
-    roomId: 12,
-    userId: 1,
-    date: "2024-06-01",
-    startTime: "09:00",
-    endTime: "10:00",
-    createdAt: "2024-06-01T08:00:00Z",
-    }];
+    const bookings: Booking[] = [
+      {
+        id: 1,
+        roomId: 12,
+        userId: 1,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
     const input = {
       roomId: 12,
       date: "2024-06-01",
       startTime: "09:30",
       endTime: "10:30",
     };
-    expect(createBooking(input, 1, "2024-06-01T08:00:00Z", bookings, user, rooms)).toEqual({
+    expect(createBooking(input, bookings, user, rooms)).toEqual({
       success: false,
-      error: "ROOM_OVERLAP"
+      error: "ROOM_OVERLAP",
     });
+  });
+  it("generates an ID above the highest existing ID for an unsorted list", () => {
+    const user: User = { id: 7, name: "Alice", role: "booker" };
+    const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
+    const bookings: Booking[] = [
+      {
+        id: 8,
+        roomId: 12,
+        userId: 7,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+      {
+        id: 2,
+        roomId: 12,
+        userId: 7,
+        date: "2024-06-01",
+        startTime: "10:00",
+        endTime: "11:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+      {
+        id: 5,
+        roomId: 12,
+        userId: 7,
+        date: "2024-06-01",
+        startTime: "11:00",
+        endTime: "12:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    const input = {
+      roomId: 12,
+      date: "2024-06-02",
+      startTime: "09:00",
+      endTime: "10:00",
+    };
+    expect(createBooking(input, bookings, user, rooms)).toEqual({
+      success: true,
+      booking: {
+        id: 9,
+        userId: 7,
+        roomId: 12,
+        date: "2024-06-02",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00.000Z",
+      },
+    });
+  });
+  it("does not modify existing bookings", () => {
+    const user: User = { id: 7, name: "Alice", role: "booker" };
+    const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
+    const bookings: Booking[] = [
+      {
+        id: 8,
+        roomId: 12,
+        userId: 7,
+        date: "2024-06-01",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+      {
+        id: 2,
+        roomId: 12,
+        userId: 7,
+        date: "2024-06-01",
+        startTime: "10:00",
+        endTime: "11:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+      {
+        id: 5,
+        roomId: 12,
+        userId: 7,
+        date: "2024-06-01",
+        startTime: "11:00",
+        endTime: "12:00",
+        createdAt: "2024-06-01T08:00:00Z",
+      },
+    ];
+    const input = {
+      roomId: 12,
+      date: "2024-06-02",
+      startTime: "09:00",
+      endTime: "10:00",
+    };
+    const bookingsBefore = bookings.map(booking => ({ ...booking }));
+    expect(createBooking(input, bookings, user, rooms)).toEqual({
+      success: true,
+      booking: {
+        id: 9,
+        userId: 7,
+        roomId: 12,
+        date: "2024-06-02",
+        startTime: "09:00",
+        endTime: "10:00",
+        createdAt: "2024-06-01T08:00:00.000Z",
+      },
+    });
+    expect(bookings).toEqual(bookingsBefore);
   })
 });

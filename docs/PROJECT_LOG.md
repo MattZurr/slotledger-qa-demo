@@ -228,7 +228,7 @@ Decision:
 
 ### TASK 005 — Booking creation
 
-Status: In progress — TASK 005A contract agreed (2026-10-06); TASK 005B validation integration completed and verified (2026-10-08). TASK 005C internal ID/timestamp generation is next.
+Status: In progress — TASK 005A contract agreed (2026-10-06); TASK 005B validation integration completed and verified (2026-10-08); TASK 005C internal ID/timestamp generation and input-array immutability coverage completed and verified (2026-10-09). Core creation is complete; TASK 005D persistence remains pending.
 
 Goals:
 - Define the booking-creation contract.
@@ -281,7 +281,7 @@ Historical handoff after the mentoring session (2026-10-06):
 - The owner accepted editor suggestions for the test and wants to understand it. Suggested exercise, not yet implemented: use different user, room and booking IDs (currently all are 1) and explain which expected fields must change.
 - This is intentionally unfinished work for transfer to another computer. Continue mentoring in small steps; do not automatically complete the implementation.
 
-Latest handoff — TASK 005B completed (2026-10-08):
+Historical handoff — TASK 005B completed (2026-10-08):
 - Integrated `roomExists()`, `timeValidation()` and `roomOverlap()` into `createBooking()`, alongside the existing permission check.
 - Validation order: permissions, room existence, time validity, overlap. Each rejection returns its corresponding error before booking construction.
 - The success test now uses distinct IDs: user 7, room 12, booking 42, detecting incorrect field assignments.
@@ -292,6 +292,20 @@ Latest handoff — TASK 005B completed (2026-10-08):
 - No persistence, UI or new dependencies were added. TASK 005 as a whole is not complete.
 - Learning covered: whole-object assertions, distinct IDs, success/error union variants versus runtime conditions, early returns, incremental failing/passing tests, and required fields in `Booking[]` fixtures.
 - Documentation updated for handoff; commit commands are provided to the owner, who performs the commit.
+
+Latest handoff — TASK 005C and core verification completed (2026-10-09):
+- Removed the temporary `id` and `createdAt` parameters. The final signature is `createBooking(input, bookings, user, rooms): CreateBookingResult`.
+- After successful validation, a `for...of` loop finds the highest existing booking ID; the new ID is that maximum plus 1. The maximum starts at 0, so an empty list produces ID 1.
+- Generates `createdAt` internally with `new Date().toISOString()` after validation succeeds.
+- Updated the complete success test to expect ID 1 for an empty list, keeping distinct user 7 and room 12 IDs.
+- Added a success test with unsorted existing IDs `[8, 2, 5]`, expecting ID 9. Existing bookings use a different date from the new booking to avoid overlap rejection.
+- Added clock control scoped to `describe("createBooking")`: `beforeEach` enables fake timers and sets the time to `2024-06-01T08:00:00.000Z`; `afterEach` restores real timers. Success assertions check the exact ISO timestamp, including milliseconds.
+- Added an explicit immutability test: copy the array and each existing booking with `bookings.map(booking => ({ ...booking }))` before creation, assert the complete success result, then compare `bookings` with the saved copy.
+- There are now seven creation tests and 40 tests in total. All agreed minimum core acceptance criteria are covered.
+- Verification: `npm.cmd run test:run` passed 40/40 tests; `npm.cmd run build` passed. Review found no blocking issue in the completed changes.
+- Learning covered: existing `booking.id` versus a removed function parameter; assignment of the maximum versus incrementing a counter; avoiding adding 1 twice; why empty-list tests miss loop-body errors; controlled clocks and string equality for ISO timestamps; `map`, arrow functions and parentheses around returned objects; copying array entries to detect mutation; whole-object assertions already verifying `success: true`.
+- No persistence, UI or new dependencies were added. TASK 005D requires a contract discussion before implementation; TASK 005 as a whole remains in progress.
+- Documentation updated for handoff. No commit or push was performed during this session.
 
 ### TASK 006 — User interface
 
@@ -330,9 +344,7 @@ The planned task sequence may change as the project develops.
 
 ## 7. Next action
 
-1. Begin TASK 005C incrementally: generate ID internally as the highest existing ID plus 1, or 1 for an empty list. Add tests for empty lists and gaps in IDs, preferably using unsorted existing IDs.
-2. Generate `createdAt` with `new Date().toISOString()` after validation succeeds and test it; explain clock control if needed.
-3. Remove temporary ID/timestamp parameters as generation moves inside and update calls to `(input, bookings, user, rooms)`.
-4. Add a test confirming that the input booking array and existing entries remain unchanged.
-5. Run tests/build and review the core against the agreed acceptance criteria. Continue mentoring with hints before full solutions; dependency installation requires explicit permission.
-6. Discuss TASK 005D persistence only after core verification. Keep TASK 006 UI out of scope.
+1. Continue from the verified TASK 005 core: ID/timestamp generation and input-array immutability coverage are complete, with 40/40 tests and a passing build on 2026-10-09.
+2. Discuss the contract and minimum acceptance criteria for TASK 005D local persistence before implementation. Keep persistence separate from `createBooking()`.
+3. Let the owner implement in small steps with incremental tests and hints before full solutions. File edits and dependency installation require explicit permission.
+4. Keep TASK 006 UI out of scope. Commits and pushes remain the owner's actions unless explicitly delegated.

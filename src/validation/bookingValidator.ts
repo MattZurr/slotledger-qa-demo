@@ -76,8 +76,6 @@ export function roomOverlap(
 
 export function createBooking(
   input: CreateBookingInput,
-  id: number,
-  createdAt: string,
   bookings: Booking[],
   user: User,
   rooms: Room[],
@@ -94,6 +92,14 @@ export function createBooking(
   if (roomOverlap(input.startTime, input.endTime, input.roomId, bookings, input.date)) {
     return { success: false, error: "ROOM_OVERLAP" };
   }
+  let maxId = 0;
+  for (const booking of bookings) {
+    if (booking.id > maxId) {
+      maxId = booking.id;
+    }
+  }
+  const createdAt = new Date().toISOString();
+  const id = maxId + 1;
   const newBooking: Booking = {
     ...input,
     id,

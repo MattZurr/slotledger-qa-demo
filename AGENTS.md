@@ -154,16 +154,20 @@ Minimum unit-test acceptance criteria:
 - ID generation handles an empty booking list and gaps in existing IDs.
 - The input booking array remains unchanged.
 
-### Current implementation and verification (2026-10-08)
+### Current implementation and verification (2026-10-09)
 
 - `CreateBookingResult` exists in `src/models/booking.ts`.
 - `CreateBookingInput` no longer contains `userId`; creation sets `Booking.userId` from `user.id`.
 - TASK 005B validation integration is complete. `createBooking` returns `CreateBookingResult` and reuses all four validators, in order: permissions, room existence, time validity, overlap.
 - Each failure returns its corresponding error code before creating the booking. `roomOverlap()` returning `true` triggers rejection; the other validators returning `false` trigger rejection.
-- The temporary signature is `(input, id, createdAt, bookings, user, rooms)`. Passing ID and timestamp is an unfinished deviation from the agreed contract; move their generation inside the function in TASK 005C.
-- Five creation tests cover the complete success result and all four validation failures. The success test uses distinct IDs: user 7, room 12, booking 42.
-- Verification: `npm.cmd run test:run` passed 38/38 tests; `npm.cmd run build` passed. Both `bookings` and `rooms` are now used, resolving the previous unused-parameter build errors.
-- TASK 005 remains incomplete: internal ID/timestamp generation and dedicated input-array immutability coverage are still pending. No persistence or UI has been added.
+- TASK 005C is complete. The final signature is `(input, bookings, user, rooms): CreateBookingResult`; ID and timestamp are generated internally after validation succeeds.
+- ID generation uses a `for...of` loop to find the highest existing ID, then adds 1. An empty list produces ID 1; unsorted IDs `[8, 2, 5]` produce ID 9.
+- `createdAt` is generated with `new Date().toISOString()`.
+- Seven creation tests cover complete success, all four validation failures, ID gaps in an unsorted list, and input-array immutability. The original success test covers the empty-list ID case and uses user 7, room 12, booking 1.
+- Creation tests control the clock with `vi.useFakeTimers()` and `vi.setSystemTime()` in `beforeEach`, restoring it with `vi.useRealTimers()` in `afterEach`. Expected timestamps include `.000Z`.
+- The immutability test copies both the array and its entries with `bookings.map(booking => ({ ...booking }))` before calling the function, asserts successful creation, then compares the original data with the copy.
+- Verification on 2026-10-09: `npm.cmd run test:run` passed 40/40 tests; `npm.cmd run build` passed. Core creation meets the agreed minimum acceptance criteria; no blocking issue was found in the reviewed changes.
+- TASK 005 core creation is complete; TASK 005D persistence is still pending. No persistence, UI or new dependencies have been added.
 
 ### Next mentoring steps
 
@@ -176,14 +180,13 @@ Before writing code, inspect:
 - `docs/PROJECT_LOG.md`.
 
 Continue in small steps, letting the owner implement the code:
-1. Start TASK 005C with ID generation: explain highest existing ID plus 1 and the empty-list case. Let the owner implement incrementally with tests for empty lists and gaps in IDs (prefer unsorted data).
-2. Generate `createdAt` internally after successful validation and test the generated ISO timestamp; explain clock control if needed.
-3. Remove the temporary `id` and `createdAt` parameters as their generation moves inside, updating calls to the agreed `(input, bookings, user, rooms)` signature.
-4. Add an explicit test that the input booking array and its existing entries remain unchanged.
-5. Run tests and build, then review the core logic against the agreed acceptance criteria. Dependency installation requires explicit permission.
-6. Discuss persistence only after core verification; keep UI out of scope.
+1. Continue from the verified core; do not repeat TASK 005C implementation.
+2. Discuss the small contract and acceptance criteria for TASK 005D local persistence before implementation. Keep storage separate from `createBooking()` and keep UI out of scope.
+3. Let the owner implement persistence and its tests incrementally after that discussion. Do not modify files or install dependencies without explicit permission.
 
 Learning covered on 2026-10-08: distinct test IDs, success/error result variants, types versus runtime conditions, early returns, tests detecting missing validation before implementation, and required fields in `Booking[]` test data. Continue giving hints before complete code.
+
+Learning covered on 2026-10-09: parameters versus existing object fields and local variables; tracking a maximum versus incrementing a counter; why an empty-list test cannot detect loop-body bugs; unsorted ID test data; controlled test clocks and ISO milliseconds; `map`, arrow functions, implicit object returns, object spread and independent copies; whole-result assertions already checking `success: true`.
 
 ### TASK 005 constraints
 
@@ -202,9 +205,9 @@ Learning covered on 2026-10-08: distinct test IDs, success/error result variants
 The contract above is agreed; the intended progression is:
 
 - TASK 005A — booking creation contract and acceptance criteria (agreed)
-- TASK 005B — core creation logic and integration with existing validation rules (completed and verified 2026-10-08; temporary ID/timestamp parameters remain for TASK 005C)
-- TASK 005C — ID and `createdAt` generation
-- TASK 005D — local persistence after the core logic is verified
+- TASK 005B — core creation logic and integration with existing validation rules (completed and verified 2026-10-08)
+- TASK 005C — ID and `createdAt` generation (completed and verified 2026-10-09, including input-array immutability coverage)
+- TASK 005D — local persistence (pending contract discussion; core logic verified)
 
 Do not treat this sequence as fixed if the actual code suggests a simpler design. Discuss changes first.
 
