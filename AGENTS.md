@@ -65,6 +65,7 @@ Current relevant structure:
 
 - `src/models/` — domain interfaces and types
 - `src/validation/` — booking validation/business rules and Vitest unit tests
+- `src/storage/` — local booking read/write logic and its Vitest tests (TASK 005D agreed scope completed)
 - `src/main.ts` — application entry point
 - `docs/PROJECT_LOG.md` — project history, decisions and progress
 - `AGENTS.md` — persistent instructions for Codex
@@ -132,7 +133,7 @@ Verification recorded for TASK 004:
 
 TASK 005 — Booking creation.
 
-Do not start by implementing the whole task at once.
+Agreed implementation scope completed and verified on 2026-10-12, including TASK 005D. Prepare the changes for the owner's commit; do not start TASK 006 automatically.
 
 ### TASK 005A — agreed contract (2026-10-06)
 
@@ -154,7 +155,7 @@ Minimum unit-test acceptance criteria:
 - ID generation handles an empty booking list and gaps in existing IDs.
 - The input booking array remains unchanged.
 
-### Current implementation and verification (2026-10-09)
+### Core implementation and verification (2026-10-09)
 
 - `CreateBookingResult` exists in `src/models/booking.ts`.
 - `CreateBookingInput` no longer contains `userId`; creation sets `Booking.userId` from `user.id`.
@@ -169,6 +170,31 @@ Minimum unit-test acceptance criteria:
 - Verification on 2026-10-09: `npm.cmd run test:run` passed 40/40 tests; `npm.cmd run build` passed. Core creation meets the agreed minimum acceptance criteria; no blocking issue was found in the reviewed changes.
 - TASK 005 core creation is complete; TASK 005D persistence is still pending. No persistence, UI or new dependencies have been added.
 
+### Historical TASK 005D handoff (2026-10-11)
+
+- The owner approved a separate `src/storage/` module and implemented the initial read path. TASK 005D is in progress, not complete.
+- `LoadBookingsResult` in `src/models/booking.ts` is `{ success: true; bookings: Booking[] } | { success: false; error: "INVALID_STORED_DATA" }`.
+- `loadBookings()` reads `localStorage.getItem("slotledger.bookings")`. Missing storage (`null`) returns success with `[]`; valid data returns the parsed bookings; malformed JSON or invalid structure returns the error. Existing storage is never deleted or overwritten by this function.
+- Exported `isBooking(value: unknown): value is Booking` checks a non-null object and all seven required fields using `in` and `typeof`: numeric IDs and string date/time fields. `Array.isArray` and `.every(isBooking)` validate the parsed list without a type assertion.
+- This is structural validation only; date/time formats and business rules are not checked here. Storage-access exceptions from `getItem` are not handled yet (the call is outside `try`). Discuss the remaining error contract before implementing it.
+- Three storage tests cover missing storage (including the key used), a valid saved booking, and malformed JSON. Tests use `vi.fn().mockReturnValue`, `vi.stubGlobal`, and `afterEach` with `vi.unstubAllGlobals`.
+- Final verification: 43/43 tests passed and production build passed on 2026-10-11. The success test previously detected returning `[]` instead of `parsedBookings`; the owner corrected it.
+- Still pending: structural rejection tests, saved empty-list coverage, preservation coverage, write contract and `saveBookings()` implementation/tests. No UI, dependencies, commit or push were added by the assistant.
+- The owner wants a GitHub portfolio they can explain line by line. Prefer understandable code over shortening it automatically. An optional comparison with field lists and `.every()` was discussed for later, after tests; no refactor has been implemented.
+
+### Latest TASK 005D handoff — read/write scope completed (2026-10-12)
+
+- The owner implemented the changes incrementally. Core creation remains separate from persistence; no UI integration was added.
+- `LoadBookingsResult` now allows `INVALID_STORED_DATA` or `STORAGE_READ_ERROR` in its failure variant. `loadBookings()` declares `let storedBookings: string | null`, calls `getItem` once inside its own `try/catch`, then checks for `null`. Parsing has a separate `try/catch`, preserving the distinction between access errors and invalid data.
+- The agreed write contract is implemented as `saveBookings(bookings: Booking[]): SaveBookingsResult`. It serializes the whole supplied list with `JSON.stringify` and writes it with `localStorage.setItem("slotledger.bookings", ...)`, replacing the previous value. An empty list is stored as `"[]"`.
+- `SaveBookingsResult` is `{ success: true } | { success: false; error: "STORAGE_WRITE_ERROR" }`. Serialization and storage access are inside `try`; success is returned after the write, and exceptions return the write error.
+- Storage has 16 tests: 13 for reading and 3 for writing. Read coverage includes missing storage/key, valid data, malformed JSON, non-array JSON, null and numeric entries, missing `createdAt`, string `roomId`, mixed valid/invalid entries, saved `[]`, preservation on malformed JSON and invalid structure, and a thrown read exception. Preservation tests assert no calls to `setItem`, `removeItem`, or `clear`.
+- Write tests cover the complete JSON for two bookings, a thrown write exception, and successful storage of an empty list. Each describe block restores globals in `afterEach`.
+- The read-error test failed before exception handling was added, including when an accidental duplicate read remained outside `try`. The first write test detected the success-only stub (zero `setItem` calls); the write-error test failed before its `try/catch` was implemented.
+- Final verification on 2026-10-12: `npm.cmd run test:run` passed 56/56 tests across two files; `npm.cmd run build` passed. This is unit coverage with mocked storage, not browser/UI integration verification.
+- Structural validation remains intentionally limited to required fields and primitive types. No business-rule validation or field-list refactor was added to storage.
+- No dependencies, commit or push were added by the assistant. Documentation was updated at the owner's explicit request.
+
 ### Next mentoring steps
 
 Before writing code, inspect:
@@ -177,12 +203,17 @@ Before writing code, inspect:
 - `src/models/room.ts`,
 - `src/validation/bookingValidator.ts`,
 - `src/validation/bookingValidator.test.ts`,
+- `src/storage/bookingStorage.ts`,
+- `src/storage/bookingStorage.test.ts`,
 - `docs/PROJECT_LOG.md`.
 
 Continue in small steps, letting the owner implement the code:
-1. Continue from the verified core; do not repeat TASK 005C implementation.
-2. Discuss the small contract and acceptance criteria for TASK 005D local persistence before implementation. Keep storage separate from `createBooking()` and keep UI out of scope.
-3. Let the owner implement persistence and its tests incrementally after that discussion. Do not modify files or install dependencies without explicit permission.
+1. Continue from the completed read/write implementation and 56 passing tests; do not repeat the completed tests or contract design. The requested recap was delivered on 2026-10-12; revisit concepts as needed.
+2. Review the current diff with the owner and prepare a meaningful commit. The owner performs Git mutations unless explicitly delegated; no commit or push has been performed by the assistant.
+3. Before starting TASK 006, discuss a small UI scope with the owner. Do not automatically implement UI or introduce dependencies.
+4. Continue mentoring in small steps with hints before full solutions. Do not automatically edit code or refactor explicit validation checks.
+
+Learning covered on 2026-10-12: `unknown` versus inferred `any` from `JSON.parse`; valid JSON versus valid booking structure; `.every()` on empty and mixed arrays; early returns versus thrown exceptions; declaration versus assignment and why the storage call must be inside `try`; separate read/parse error handling; browser `localStorage` versus the chosen storage key; declaration files versus implementations; `vi.fn`, `mockImplementation`, `vi.stubGlobal`, object shorthand and cleanup scope; passing a mock versus invoking it; call-history assertions, `.not.toHaveBeenCalled()` and `.toHaveBeenCalledWith()`; checking side effects as well as return values; JSON serialization and tests detecting missing writes and uncaught exceptions.
 
 Learning covered on 2026-10-08: distinct test IDs, success/error result variants, types versus runtime conditions, early returns, tests detecting missing validation before implementation, and required fields in `Booking[]` test data. Continue giving hints before complete code.
 
@@ -207,7 +238,7 @@ The contract above is agreed; the intended progression is:
 - TASK 005A — booking creation contract and acceptance criteria (agreed)
 - TASK 005B — core creation logic and integration with existing validation rules (completed and verified 2026-10-08)
 - TASK 005C — ID and `createdAt` generation (completed and verified 2026-10-09, including input-array immutability coverage)
-- TASK 005D — local persistence (pending contract discussion; core logic verified)
+- TASK 005D — local persistence (agreed read/write scope completed and verified 2026-10-12; 16 storage tests, 56 total tests, production build passed)
 
 Do not treat this sequence as fixed if the actual code suggests a simpler design. Discuss changes first.
 

@@ -19,5 +19,20 @@ export type CreateBookingResult =
   | { success: true; booking: Booking }
   | {
       success: false;
-      error: "NO_PERMISSION" | "ROOM_NOT_FOUND" | "INVALID_TIME" | "ROOM_OVERLAP";
+      error:
+        | "NO_PERMISSION"
+        | "ROOM_NOT_FOUND"
+        | "INVALID_TIME"
+        | "ROOM_OVERLAP";
     };
+
+export type LoadBookingsResult =
+  | { success: true; bookings: Booking[] }
+  | {
+      success: false;
+      error: "INVALID_STORED_DATA" | "STORAGE_READ_ERROR";
+    };
+
+export type SaveBookingsResult =
+  | { success: true }
+  | { success: false; error: "STORAGE_WRITE_ERROR" };
