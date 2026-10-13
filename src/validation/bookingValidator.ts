@@ -89,6 +89,9 @@ export function createBooking(
   if (!timeValidation(input.startTime, input.endTime)) {
     return { success: false, error: "INVALID_TIME" };
   }
+  if (!dateValidation(input.date)) {
+    return { success: false, error: "INVALID_DATE" };
+  }
   if (roomOverlap(input.startTime, input.endTime, input.roomId, bookings, input.date)) {
     return { success: false, error: "ROOM_OVERLAP" };
   }
@@ -107,4 +110,29 @@ export function createBooking(
     userId: user.id,
   };
   return { success: true, booking: newBooking };
+}
+
+export function dateValidation(date: string): boolean {
+  const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+  if (!datePattern.test(date)) {
+    return false;
+  }
+  const dateParts = date.split("-");
+  const year = Number(dateParts[0]);
+  const month = Number(dateParts[1]);
+  const day = Number(dateParts[2]);
+  const leapYear = (year: number): boolean => {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  };
+  if (month < 1 || month > 12) {
+    return false;
+  }
+  if (day < 1 || day > 31) {
+    return false;
+  }
+  const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (month === 2 && leapYear(year)) {
+    return day <= 29;
+  }
+  return day <= daysInMonth[month - 1];
 }

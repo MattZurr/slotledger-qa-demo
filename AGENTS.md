@@ -2,12 +2,12 @@
 
 ## Project overview
 
-SlotLedger is a small TypeScript application for managing room bookings.
+SlotLedger is a small TypeScript room-booking application built as a QA Automation portfolio project.
 
 The project has three goals:
-1. Demonstrate practical TypeScript and QA automation skills in a public GitHub portfolio.
-2. Provide a realistic demo application for a QA Release Check service.
-3. Help the project owner learn programming, testing and software development through hands-on practice.
+1. Demonstrate practical TypeScript, testing and QA automation skills in a public GitHub repository.
+2. Provide a realistic application for a future QA Release Check case study.
+3. Keep implementation decisions explicit, testable and easy to explain during technical interviews.
 
 This is an educational portfolio project, not a production booking system.
 
@@ -17,71 +17,134 @@ Current:
 - TypeScript
 - Vite
 - HTML and CSS
-- Vitest for unit testing
+- Vitest
+- Browser `localStorage`
 - Git and GitHub
 
 Planned:
-- Playwright for end-to-end testing
 - GitHub Actions
+- Playwright
 
-Do not introduce additional frameworks, dependencies or architectural patterns without explaining why they are needed and obtaining approval.
+Do not introduce a framework, backend, database or new dependency unless it solves an agreed project need and the owner approves it first.
 
 ## Working style
-
-The project owner is an experienced manual QA Engineer who is learning TypeScript and test automation.
 
 Act primarily as a programming mentor and code reviewer, not as an autonomous developer.
 
 Follow these rules:
 
 1. Respond in Polish unless asked otherwise.
-2. Explain technical concepts using practical examples from SlotLedger.
-3. Prefer small, incremental tasks.
+2. Explain concepts using practical examples from SlotLedger.
+3. Prefer bounded, complete functional tasks with clear acceptance criteria and one review after implementation. Break work into individual statements only when the owner asks or needs help.
 4. Give hints before providing complete solutions.
-5. Let the project owner implement functions and tests independently.
+5. Let the owner implement functions and tests independently whenever practical.
 6. Do not modify files unless explicitly asked.
 7. Do not create commits, push changes or install dependencies without explicit permission.
-8. When reviewing code, distinguish actual bugs from optional improvements.
-9. Explain the reasoning behind suggested changes.
-10. Do not introduce unrelated tasks or expand the agreed scope.
-11. Before proposing the next task, read `docs/PROJECT_LOG.md` and inspect the actual repository state.
-12. Do not assume that documentation is newer than the code. If they differ, report the mismatch before continuing.
+8. The owner normally runs Git commands himself for practice.
+9. When reviewing code, distinguish:
+   - blocking bugs,
+   - valuable improvements,
+   - optional refactors.
+10. Explain why a suggested change matters.
+11. Do not silently expand scope.
+12. Before proposing the next task, read `docs/PROJECT_LOG.md` and inspect the current repository state.
+13. If code, Git history and documentation disagree, report the mismatch instead of guessing.
+14. Prefer understandable code the owner can explain line by line over clever abstractions.
+15. Preserve previously agreed behavior unless a change is explicitly discussed.
+16. Keep the agreed pre-publication scope closed. Any new blocker must identify a concrete defect and its impact; optional review comments must not trigger extra correction rounds.
+17. Test business risks and agreed boundaries, not a target test count. Use parameterized tests where helpful; rewriting existing tests or adding speculative cases must not delay the demo.
+18. Describe AI assistance accurately in the README: it includes mentoring, design and test-scenario suggestions, debugging, code review, code examples and documentation. The owner implements with guidance and makes final inclusion decisions. Do not claim fully independent authorship or review-only AI use. Update the description if the actual contribution changes; per-test labels and authorship percentages are unnecessary.
+
+## Portfolio-first rule
+
+The project is now being prepared for public use in the owner's LinkedIn profile and job applications.
+
+The immediate objective is not to finish the entire application before publication.
+
+The objective is:
+
+1. remove the few remaining credibility-blocking data-validation gaps,
+2. complete the minimal working UI before publication,
+3. add reproducible CI, a recruiter-oriented README and concise QA evidence,
+4. verify and publish the repository and website demo for LinkedIn/CV,
+5. continue development publicly while job applications are active.
+
+Decision updated on 2026-10-13: the owner wants to finish the minimal UI today and publish only after it works, to support a strong first impression. This is a delivery target, not permission to skip correctness checks. Order: TASK 005E.1 -> TASK 005E.2 -> TASK 006 -> TASK 005F -> publication. Task numbers remain unchanged. Hosting has not yet been selected; a public repository and a hosted website are separate deliverables.
+
+When suggesting work, classify recommendations as:
+
+### Blocking before publication
+Known defects affecting the agreed booking flow or data consistency, misleading test claims, and missing agreed publication deliverables (minimal UI, CI, README and verification). Do not classify every possible future improvement as a blocker.
+
+### Valuable after publication
+Features that materially improve the portfolio but are not required before the owner starts applying.
+
+### Optional refactor
+Cleanup or abstraction that must not delay publication or job applications unless it fixes a real correctness problem.
+
+Do not keep expanding the pre-publication scope with low-probability edge cases or architecture work.
 
 ## Code review
 
 When asked to review code:
 
-- Read the current implementation and relevant tests.
-- Identify correctness issues and edge cases.
-- Check TypeScript types, readability and separation of responsibilities.
-- Suggest improvements appropriate to the owner's current skill level.
-- Provide specific test cases.
-- Distinguish blocking issues from optional refactors.
-- Do not rewrite the entire solution unless explicitly requested.
+- read the current implementation and relevant tests,
+- check correctness, edge cases, TypeScript types and separation of responsibilities,
+- check whether tests actually detect the behavior they claim to verify,
+- reuse existing business rules instead of duplicating them,
+- suggest improvements appropriate to the current project scale,
+- distinguish required changes from optional refactors,
+- do not rewrite the entire solution unless explicitly requested.
 
-## Project structure
+Codex runs `npm run test:run` directly when verifying code changes, including during incremental reviews. Do not ask the owner to run it or paste its output.
 
-Current relevant structure:
+Before closing a task, Codex runs:
 
-- `src/models/` — domain interfaces and types
-- `src/validation/` — booking validation/business rules and Vitest unit tests
-- `src/storage/` — local booking read/write logic and its Vitest tests (TASK 005D agreed scope completed)
+```bash
+npm run test:run
+```
+
+Ask the owner to run the build:
+
+```bash
+npm run build
+```
+
+Do not claim those commands passed unless the result is available in the current session or clearly recorded as historical verification.
+
+## Current project structure
+
+Relevant structure:
+
+- `src/models/` — domain interfaces and result types
+- `src/validation/` — business rules, booking creation and Vitest tests
+- `src/storage/` — localStorage read/write logic and Vitest tests
 - `src/main.ts` — application entry point
+- `src/style.css` — current styling
 - `docs/PROJECT_LOG.md` — project history, decisions and progress
-- `AGENTS.md` — persistent instructions for Codex
-
-Do not add new top-level architecture without discussing it first.
+- `AGENTS.md` — persistent Codex instructions
 
 ## Completed work
 
 ### TASK 000 — Project setup
+
 Completed.
 
 ### TASK 001 — Domain models
+
 Completed.
-Defined `Booking`, `CreateBookingInput`, `Room` and `User`.
+
+Current important types include:
+- `Booking`
+- `CreateBookingInput`
+- `CreateBookingResult`
+- `LoadBookingsResult`
+- `SaveBookingsResult`
+- `Room`
+- `User`
 
 ### TASK 002 — Booking time validation
+
 Completed and committed.
 
 Implemented:
@@ -89,169 +152,372 @@ Implemented:
 `timeValidation(startTime: string, endTime: string): boolean`
 
 Behavior:
-- accepts only fixed-width `HH:mm`,
-- hours 00–23,
-- minutes 00–59,
-- end time must be later than start time,
-- bookings crossing midnight are rejected.
+- accepts exact `HH:mm`,
+- accepts hours 00–23,
+- accepts minutes 00–59,
+- requires end time to be later than start time,
+- rejects equal times,
+- rejects bookings crossing midnight.
 
 ### TASK 003 — Vitest unit tests
+
 Completed and committed.
 
-- Vitest configured.
-- 17 tests added for `timeValidation()`.
-- Controlled negative check confirmed that the equal-times test detects an incorrect `<=` implementation.
+Vitest is configured and used as the unit-test framework.
 
 ### TASK 004 — Additional booking rules
-Completed and committed on 2026-10-05.
-Final commit: `098f492` — feat: complete booking overlap validation and prepare TASK 005.
+
+Completed and committed.
 
 Implemented:
 
 `canCreateBooking(user: User): boolean`
-- `booker` -> `true`
-- `viewer` -> `false`
 
 `roomExists(roomId: number, rooms: Room[]): boolean`
-- returns whether a room with the requested ID exists.
 
-`roomOverlap(startTime: string, endTime: string, roomId: number, bookings: Booking[], date: string): boolean`
-- checks only bookings for the same room and date,
-- detects partial overlaps,
-- detects containment in both directions,
-- detects identical ranges,
+`roomOverlap(
+  startTime: string,
+  endTime: string,
+  roomId: number,
+  bookings: Booking[],
+  date: string
+): boolean`
+
+Important overlap behavior:
+- only bookings for the same room and date are compared,
+- partial overlap is rejected,
+- containment in either direction is rejected,
+- identical ranges are rejected,
 - touching boundaries are allowed,
-- empty booking lists return `false`,
-- assumes the supplied times have already passed `timeValidation()`.
+- an empty booking list means no overlap,
+- overlap logic assumes validated fixed-width `HH:mm` values.
 
-Verification recorded for TASK 004:
-- 33/33 Vitest tests passed.
-- TypeScript/Vite production build passed.
-- An independent review found no blocking issue in the current TASK 004 implementation.
+Final TASK 004 commit:
 
-## Current task
+`098f492` — `feat: complete booking overlap validation and prepare TASK 005`
 
-TASK 005 — Booking creation.
+Historical verification:
+- 33/33 tests passed,
+- production build passed.
 
-Agreed implementation scope completed and verified on 2026-10-12, including TASK 005D. Prepare the changes for the owner's commit; do not start TASK 006 automatically.
+### TASK 005 — Booking creation and local persistence
 
-### TASK 005A — agreed contract (2026-10-06)
+Completed and committed.
 
-The contract and minimum acceptance criteria have been agreed. Continue from these decisions rather than restarting contract design.
+Final TASK 005 commit:
 
-- Inputs: `input: CreateBookingInput`, `bookings: Booking[]`, `user: User`, `rooms: Room[]`.
-- Return type: `CreateBookingResult`, with `{ success: true; booking: Booking }` or `{ success: false; error: ... }`.
-- Error codes: `NO_PERMISSION`, `ROOM_NOT_FOUND`, `INVALID_TIME`, `ROOM_OVERLAP`.
-- Reuse `canCreateBooking`, `roomExists`, `timeValidation` and `roomOverlap`; validate times before checking overlap.
-- Generate ID as the highest existing booking ID plus 1; use 1 for an empty list. Do not use array length plus 1.
-- Generate `createdAt` with `new Date().toISOString()` after validation succeeds.
-- Remove `userId` from `CreateBookingInput`; set `Booking.userId` from the supplied `user.id`. Keep `userId` in `Booking`.
-- Return a single booking in the success result. Updating the booking list and persistence are separate responsibilities.
-- Do not add persistence or UI yet.
+`1c80207` — `feat: add local booking persistence with validation and tests`
 
-Minimum unit-test acceptance criteria:
-- Successful creation returns a complete booking with the input fields, `user.id`, generated ID and ISO creation timestamp.
-- Each of the four validation failures returns its corresponding error code.
-- ID generation handles an empty booking list and gaps in existing IDs.
-- The input booking array remains unchanged.
+#### Booking creation
 
-### Core implementation and verification (2026-10-09)
+Implemented:
 
-- `CreateBookingResult` exists in `src/models/booking.ts`.
-- `CreateBookingInput` no longer contains `userId`; creation sets `Booking.userId` from `user.id`.
-- TASK 005B validation integration is complete. `createBooking` returns `CreateBookingResult` and reuses all four validators, in order: permissions, room existence, time validity, overlap.
-- Each failure returns its corresponding error code before creating the booking. `roomOverlap()` returning `true` triggers rejection; the other validators returning `false` trigger rejection.
-- TASK 005C is complete. The final signature is `(input, bookings, user, rooms): CreateBookingResult`; ID and timestamp are generated internally after validation succeeds.
-- ID generation uses a `for...of` loop to find the highest existing ID, then adds 1. An empty list produces ID 1; unsorted IDs `[8, 2, 5]` produce ID 9.
-- `createdAt` is generated with `new Date().toISOString()`.
-- Seven creation tests cover complete success, all four validation failures, ID gaps in an unsorted list, and input-array immutability. The original success test covers the empty-list ID case and uses user 7, room 12, booking 1.
-- Creation tests control the clock with `vi.useFakeTimers()` and `vi.setSystemTime()` in `beforeEach`, restoring it with `vi.useRealTimers()` in `afterEach`. Expected timestamps include `.000Z`.
-- The immutability test copies both the array and its entries with `bookings.map(booking => ({ ...booking }))` before calling the function, asserts successful creation, then compares the original data with the copy.
-- Verification on 2026-10-09: `npm.cmd run test:run` passed 40/40 tests; `npm.cmd run build` passed. Core creation meets the agreed minimum acceptance criteria; no blocking issue was found in the reviewed changes.
-- TASK 005 core creation is complete; TASK 005D persistence is still pending. No persistence, UI or new dependencies have been added.
+`createBooking(
+  input: CreateBookingInput,
+  bookings: Booking[],
+  user: User,
+  rooms: Room[]
+): CreateBookingResult`
 
-### Historical TASK 005D handoff (2026-10-11)
+Behavior:
+- reuses existing business validators,
+- validation order:
+  1. permission,
+  2. room existence,
+  3. time validity,
+  4. overlap,
+- returns explicit failure codes,
+- assigns `Booking.userId` from `user.id`,
+- generates ID as the highest existing booking ID + 1,
+- uses ID 1 for an empty booking list,
+- generates `createdAt` with `new Date().toISOString()`,
+- does not mutate the supplied bookings array.
 
-- The owner approved a separate `src/storage/` module and implemented the initial read path. TASK 005D is in progress, not complete.
-- `LoadBookingsResult` in `src/models/booking.ts` is `{ success: true; bookings: Booking[] } | { success: false; error: "INVALID_STORED_DATA" }`.
-- `loadBookings()` reads `localStorage.getItem("slotledger.bookings")`. Missing storage (`null`) returns success with `[]`; valid data returns the parsed bookings; malformed JSON or invalid structure returns the error. Existing storage is never deleted or overwritten by this function.
-- Exported `isBooking(value: unknown): value is Booking` checks a non-null object and all seven required fields using `in` and `typeof`: numeric IDs and string date/time fields. `Array.isArray` and `.every(isBooking)` validate the parsed list without a type assertion.
-- This is structural validation only; date/time formats and business rules are not checked here. Storage-access exceptions from `getItem` are not handled yet (the call is outside `try`). Discuss the remaining error contract before implementing it.
-- Three storage tests cover missing storage (including the key used), a valid saved booking, and malformed JSON. Tests use `vi.fn().mockReturnValue`, `vi.stubGlobal`, and `afterEach` with `vi.unstubAllGlobals`.
-- Final verification: 43/43 tests passed and production build passed on 2026-10-11. The success test previously detected returning `[]` instead of `parsedBookings`; the owner corrected it.
-- Still pending: structural rejection tests, saved empty-list coverage, preservation coverage, write contract and `saveBookings()` implementation/tests. No UI, dependencies, commit or push were added by the assistant.
-- The owner wants a GitHub portfolio they can explain line by line. Prefer understandable code over shortening it automatically. An optional comparison with field lists and `.every()` was discussed for later, after tests; no refactor has been implemented.
+Current creation failure codes:
+- `NO_PERMISSION`
+- `ROOM_NOT_FOUND`
+- `INVALID_TIME`
+- `ROOM_OVERLAP`
 
-### Latest TASK 005D handoff — read/write scope completed (2026-10-12)
+#### Local persistence
 
-- The owner implemented the changes incrementally. Core creation remains separate from persistence; no UI integration was added.
-- `LoadBookingsResult` now allows `INVALID_STORED_DATA` or `STORAGE_READ_ERROR` in its failure variant. `loadBookings()` declares `let storedBookings: string | null`, calls `getItem` once inside its own `try/catch`, then checks for `null`. Parsing has a separate `try/catch`, preserving the distinction between access errors and invalid data.
-- The agreed write contract is implemented as `saveBookings(bookings: Booking[]): SaveBookingsResult`. It serializes the whole supplied list with `JSON.stringify` and writes it with `localStorage.setItem("slotledger.bookings", ...)`, replacing the previous value. An empty list is stored as `"[]"`.
-- `SaveBookingsResult` is `{ success: true } | { success: false; error: "STORAGE_WRITE_ERROR" }`. Serialization and storage access are inside `try`; success is returned after the write, and exceptions return the write error.
-- Storage has 16 tests: 13 for reading and 3 for writing. Read coverage includes missing storage/key, valid data, malformed JSON, non-array JSON, null and numeric entries, missing `createdAt`, string `roomId`, mixed valid/invalid entries, saved `[]`, preservation on malformed JSON and invalid structure, and a thrown read exception. Preservation tests assert no calls to `setItem`, `removeItem`, or `clear`.
-- Write tests cover the complete JSON for two bookings, a thrown write exception, and successful storage of an empty list. Each describe block restores globals in `afterEach`.
-- The read-error test failed before exception handling was added, including when an accidental duplicate read remained outside `try`. The first write test detected the success-only stub (zero `setItem` calls); the write-error test failed before its `try/catch` was implemented.
-- Final verification on 2026-10-12: `npm.cmd run test:run` passed 56/56 tests across two files; `npm.cmd run build` passed. This is unit coverage with mocked storage, not browser/UI integration verification.
-- Structural validation remains intentionally limited to required fields and primitive types. No business-rule validation or field-list refactor was added to storage.
-- No dependencies, commit or push were added by the assistant. Documentation was updated at the owner's explicit request.
+Implemented:
 
-### Next mentoring steps
+- `isBooking()`
+- `loadBookings()`
+- `saveBookings()`
 
-Before writing code, inspect:
-- `src/models/booking.ts`,
-- `src/models/user.ts`,
-- `src/models/room.ts`,
-- `src/validation/bookingValidator.ts`,
-- `src/validation/bookingValidator.test.ts`,
-- `src/storage/bookingStorage.ts`,
-- `src/storage/bookingStorage.test.ts`,
-- `docs/PROJECT_LOG.md`.
+Storage key:
 
-Continue in small steps, letting the owner implement the code:
-1. Continue from the completed read/write implementation and 56 passing tests; do not repeat the completed tests or contract design. The requested recap was delivered on 2026-10-12; revisit concepts as needed.
-2. Review the current diff with the owner and prepare a meaningful commit. The owner performs Git mutations unless explicitly delegated; no commit or push has been performed by the assistant.
-3. Before starting TASK 006, discuss a small UI scope with the owner. Do not automatically implement UI or introduce dependencies.
-4. Continue mentoring in small steps with hints before full solutions. Do not automatically edit code or refactor explicit validation checks.
+`slotledger.bookings`
 
-Learning covered on 2026-10-12: `unknown` versus inferred `any` from `JSON.parse`; valid JSON versus valid booking structure; `.every()` on empty and mixed arrays; early returns versus thrown exceptions; declaration versus assignment and why the storage call must be inside `try`; separate read/parse error handling; browser `localStorage` versus the chosen storage key; declaration files versus implementations; `vi.fn`, `mockImplementation`, `vi.stubGlobal`, object shorthand and cleanup scope; passing a mock versus invoking it; call-history assertions, `.not.toHaveBeenCalled()` and `.toHaveBeenCalledWith()`; checking side effects as well as return values; JSON serialization and tests detecting missing writes and uncaught exceptions.
+Read behavior:
+- missing key -> success with `[]`,
+- structurally valid booking array -> success,
+- malformed JSON -> `INVALID_STORED_DATA`,
+- invalid structure -> `INVALID_STORED_DATA`,
+- storage access exception -> `STORAGE_READ_ERROR`,
+- invalid stored data is not automatically deleted or overwritten.
 
-Learning covered on 2026-10-08: distinct test IDs, success/error result variants, types versus runtime conditions, early returns, tests detecting missing validation before implementation, and required fields in `Booking[]` test data. Continue giving hints before complete code.
+Write behavior:
+- serializes the supplied full booking list as JSON,
+- replaces the previous stored value,
+- stores an empty list as `[]`,
+- storage write exception -> `STORAGE_WRITE_ERROR`.
 
-Learning covered on 2026-10-09: parameters versus existing object fields and local variables; tracking a maximum versus incrementing a counter; why an empty-list test cannot detect loop-body bugs; unsorted ID test data; controlled test clocks and ISO milliseconds; `map`, arrow functions, implicit object returns, object spread and independent copies; whole-result assertions already checking `success: true`.
+Storage validation is intentionally structural at this point.
 
-### TASK 005 constraints
+Historical verification at TASK 005 completion:
+- 56/56 Vitest tests passed across two test files,
+- production TypeScript/Vite build passed.
 
-- Reuse existing validators instead of duplicating their logic.
-- Keep booking creation independent from the UI.
-- Do not add `localStorage` until the basic creation logic has been reviewed and tested.
-- Do not introduce a backend, database, framework or new dependency without approval.
-- Do not implement UI work from TASK 006.
-- Keep invalid-input behavior explicit and testable.
-- Add unit tests incrementally.
-- Give hints before complete code.
-- Do not modify files without explicit permission.
+A later repository audit confirmed that the committed source matches the documented TASK 005 design and found no blocking problem in the completed TASK 005 scope.
 
-### Planned TASK 005 sequence
+## Audit findings before public publication
 
-The contract above is agreed; the intended progression is:
+A repository audit identified two real data-consistency gaps that should be fixed before UI integration and public publication.
 
-- TASK 005A — booking creation contract and acceptance criteria (agreed)
-- TASK 005B — core creation logic and integration with existing validation rules (completed and verified 2026-10-08)
-- TASK 005C — ID and `createdAt` generation (completed and verified 2026-10-09, including input-array immutability coverage)
-- TASK 005D — local persistence (agreed read/write scope completed and verified 2026-10-12; 16 storage tests, 56 total tests, production build passed)
+### Gap 1 — booking date validation
 
-Do not treat this sequence as fixed if the actual code suggests a simpler design. Discuss changes first.
+`CreateBookingInput.date` is currently only a TypeScript `string`.
 
-## Important
+Examples such as the following are not rejected solely because of the date:
 
-The long-term goal is to build a credible QA portfolio and a demonstrable QA Release Check service.
+- `""`
+- `"abc"`
+- `"2026-2-3"`
+- `"2026-02-30"`
 
-Prioritize:
-- practical TypeScript skills,
-- explicit business rules,
-- testability,
-- readable code,
-- meaningful Git history,
-- clear documentation,
+This can also undermine date equality assumptions used by overlap logic.
 
-over unnecessary complexity or impressive-sounding architecture.
+### Gap 2 — semantically invalid data loaded from storage
+
+`isBooking()` currently validates structure and primitive types only.
+
+For example, a stored booking with:
+
+`startTime: "9:00"`
+
+can pass structural validation even though `roomOverlap()` relies on fixed-width `HH:mm` values.
+
+Therefore data loaded from storage must also satisfy the business assumptions required by the rest of the application.
+
+## Current publication roadmap
+
+### TASK 005E.1 — Date validation
+
+Completed and verified on 2026-10-13. Implemented format, month/day ranges, month lengths, leap years and INVALID_DATE integration before overlap checking. Codex ran 74/74 passing tests; the owner supplied a successful TypeScript/Vite build result. Implementation commit: aea6a92 (before any documentation amendment). Next task: TASK 005E.2.
+
+Goal:
+
+Add explicit validation of real calendar dates.
+
+Proposed function:
+
+`dateValidation(date: string): boolean`
+
+Acceptance criteria:
+
+1. Accept only exact `YYYY-MM-DD`.
+2. Reject empty or malformed values.
+3. Reject extra whitespace.
+4. Reject month values outside 01–12.
+5. Reject impossible dates such as:
+   - `2026-02-30`
+   - `2026-04-31`
+   - `2026-13-01`
+6. Cover leap-year behavior:
+   - `2024-02-29` -> valid
+   - `2023-02-29` -> invalid
+7. Do not add a future-only booking rule unless separately agreed.
+8. Add `INVALID_DATE` to failed `CreateBookingResult` variants.
+9. Integrate `dateValidation()` into `createBooking()` before overlap checking.
+10. Add focused Vitest coverage, including at least one `createBooking()` test for `INVALID_DATE`.
+
+Do not modify storage validation in this subtask.
+
+### TASK 005E.2 — Semantic validation of stored bookings
+
+Start only after TASK 005E.1 is completed and verified.
+
+Goal:
+
+Prevent stored data from violating assumptions used by booking business logic.
+
+Required behavior to discuss and implement:
+
+- keep structural validation,
+- validate stored `date` using `dateValidation()`,
+- validate stored `startTime` / `endTime` using `timeValidation()`,
+- require IDs used by stored bookings to be positive safe integers,
+- reject duplicate `Booking.id` values in one stored list,
+- do not call `createBooking()` for storage validation,
+- do not re-check current-user permissions while loading old bookings,
+- preserve existing stored data on validation failure.
+
+Do not turn this into a full production-grade data migration system.
+
+### TASK 005F — Portfolio foundation
+
+After TASK 005E.1, TASK 005E.2 and the minimal TASK 006 UI.
+
+Goal:
+
+Make the repository presentable enough to publish and link from LinkedIn/CV.
+
+Required scope:
+
+#### GitHub Actions CI
+
+Add a simple Node pipeline:
+
+```text
+npm ci
+npm run test:run
+npm run build
+```
+
+Run it on appropriate pushes and pull requests.
+
+Use one explicitly selected Node version.
+
+#### Recruiter-oriented README
+
+README should quickly explain:
+
+- what SlotLedger is,
+- what problem/rules the project demonstrates,
+- current technology,
+- how to install and run it,
+- how to run tests,
+- which business risks are covered,
+- current limitations,
+- current project status,
+- roadmap,
+- where CI/test evidence can be seen.
+
+The README must present the repository as an actively developed QA Automation portfolio project, not as a finished production application.
+
+#### QA risk / evidence map
+
+Add a small concise document or README section mapping:
+
+`business rule -> risk -> test level -> evidence`
+
+Example:
+
+`No overlapping bookings -> double-booked room -> unit boundary tests + later E2E -> Vitest / CI`
+
+#### Publication checkpoint
+
+Before changing repository visibility:
+
+- verify tests,
+- verify build,
+- verify CI,
+- verify the minimal UI flow: create -> display -> refresh -> booking persists, plus overlap rejection,
+- review README,
+- confirm no secrets or local-only files are committed,
+- confirm the repository can be understood by a recruiter without reading `PROJECT_LOG.md`.
+
+After this checkpoint the repository and website demo can be published and linked from LinkedIn/CV. Verify the same basic booking flow at the deployed URL. Choose hosting when preparing publication; do not imply that changing repository visibility deploys the website.
+
+The agreed minimal UI is required before publication. Additional UI features and optional cleanup must not delay publication.
+
+## Minimal UI before publication
+
+### TASK 006 — Minimal user interface
+
+Implement immediately after TASK 005E.2, before TASK 005F and publication.
+
+High-level scope:
+- load bookings on startup,
+- display existing bookings,
+- provide a booking form,
+- call the existing `createBooking()` logic,
+- persist successful changes through the storage module,
+- surface understandable validation and storage errors,
+- keep UI orchestration separate from business rules.
+
+Use a fixed demo user and room list, labeled form fields, a readable booking list, an empty state and a simple responsive layout. Clearly describe browser-local persistence and demo identity. A successful booking must survive refresh; overlap must produce a readable rejection. Do not report successful persistence on a write error or overwrite unreadable stored data. Keep login, editing/deleting bookings, calendar widgets, elaborate styling and new dependencies outside this milestone.
+
+Verify the main flow and overlap rejection manually before publication and record the result; do not describe these checks as automated E2E evidence.
+
+Remain framework-free unless a deliberate project-direction decision changes this.
+
+## After publication
+
+### TASK 007 — Playwright E2E
+
+Start immediately after publication, using the first meaningful UI flow. Playwright setup does not block the initial demo release.
+
+First preferred flow:
+
+`create booking -> booking appears -> refresh -> booking still exists`
+
+Later cover:
+- overlap rejection,
+- viewer permissions,
+- relevant failure states,
+- critical regression paths.
+
+Prefer:
+- resilient role/label-based locators,
+- web-first assertions,
+- no artificial sleeps,
+- trace/screenshots for failures where useful.
+
+### TASK 008 — QA Release Check case study
+
+Prepare:
+- release checklist,
+- risk-based test scope,
+- known limitations,
+- controlled defect examples,
+- regression evidence,
+- go/no-go recommendation,
+- concise report suitable for portfolio discussion.
+
+## Portfolio evidence strategy
+
+The portfolio should emphasize QA reasoning, not only test count.
+
+Prefer evidence such as:
+
+`risk -> test -> defect found -> fix -> regression test -> CI verification`
+
+The previously discovered stored-time-format issue is a useful future defect case study:
+
+- stored booking uses `9:00`,
+- structural validation accepts it,
+- overlap logic assumes `HH:mm`,
+- collision can be missed,
+- regression protection is added.
+
+Keep this example available for README / QA Release Check work.
+
+## Deferred cleanup — not blocking publication
+
+Optional later:
+- extract `slotledger.bookings` to a named constant,
+- normalize test descriptions such as `case1` / `case2`,
+- clean formatting in `bookingStorage.ts`,
+- reduce duplicated test fixtures if readability remains good,
+- move `createBooking()` to a separate module if `bookingValidator.ts` becomes too large,
+- consider explicit field assignment instead of `...input`,
+- consider test coverage reporting later.
+
+Do not delay publication or applications for these items.
+
+## Immediate next action
+
+1. Read this file and `docs/PROJECT_LOG.md`.
+2. Inspect current `main`.
+3. TASK 005E.1 is implemented, reviewed, tested and committed; the owner handles any documentation amendment and push.
+4. Keep documentation with related code commits when practical; separate documentation commits are not required.
+5. Complete and verify the agreed TASK 005E.2 scope as the next package.
+6. Build and manually verify TASK 006 minimal UI, targeting 2026-10-13 completion.
+7. Complete TASK 005F: CI, concise README, risk/evidence map and publication checks.
+8. Prepare hosting, publish the repository and demo, verify the deployed flow, and link them from LinkedIn/CV.
+
+The owner explicitly moved minimal UI before publication on 2026-10-13. Do not restore the old UI-after-publication order or expand the demo scope without discussion.

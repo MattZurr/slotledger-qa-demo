@@ -23,6 +23,7 @@ export type CreateBookingResult =
         | "NO_PERMISSION"
         | "ROOM_NOT_FOUND"
         | "INVALID_TIME"
+        | "INVALID_DATE"
         | "ROOM_OVERLAP";
     };
 

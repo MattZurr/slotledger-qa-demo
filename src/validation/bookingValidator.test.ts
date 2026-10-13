@@ -5,6 +5,7 @@ import {
   roomExists,
   roomOverlap,
   createBooking,
+  dateValidation,
 } from "./bookingValidator";
 import type { User } from "../models/user";
 import type { Room } from "../models/room";
@@ -459,7 +460,7 @@ describe("createBooking", () => {
       startTime: "09:00",
       endTime: "10:00",
     };
-    const bookingsBefore = bookings.map(booking => ({ ...booking }));
+    const bookingsBefore = bookings.map((booking) => ({ ...booking }));
     expect(createBooking(input, bookings, user, rooms)).toEqual({
       success: true,
       booking: {
@@ -473,5 +474,75 @@ describe("createBooking", () => {
       },
     });
     expect(bookings).toEqual(bookingsBefore);
-  })
+  });
+  it("rejects booking creation for an invalid date format", () => {
+    const user: User = { id: 7, name: "Alice", role: "booker" };
+    const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
+    const bookings: Booking[] = [];
+    const input = {
+      roomId: 12,
+      date: "2026-02-30",
+      startTime: "09:00",
+      endTime: "10:00",
+    };
+    expect(createBooking(input, bookings, user, rooms)).toEqual({
+      success: false,
+      error: "INVALID_DATE",
+    });
+  });
+});
+
+describe("dateValidation", () => {
+  it("accepts a valid date", () => {
+    expect(dateValidation("2026-06-01")).toBe(true);
+  });
+  it("rejects an invalid date format", () => {
+    expect(dateValidation("")).toBe(false);
+  });
+  it("rejects an invalid date format", () => {
+    expect(dateValidation("2026-2-3")).toBe(false);
+  });
+  it("rejects an invalid date format", () => {
+  expect(dateValidation("2026-02-03 ")).toBe(false);
+  });
+  it("rejects an invalid date format", () => {
+    expect(dateValidation("2026-02-03\n")).toBe(false);
+  });
+  it("rejects an invalid date format", () => { 
+    expect(dateValidation("2026-00-10")).toBe(false);
+  });
+  it("rejects an invalid date format", () => { 
+    expect(dateValidation("2026-13-10")).toBe(false);
+  });
+  it("rejects an invalid date format", () => { 
+    expect(dateValidation("2026-01-00")).toBe(false);
+  });
+  it("rejects an invalid date format", () => { 
+    expect(dateValidation("2026-01-32")).toBe(false);
+  });
+  it("accepts a valid month length (April)", () => {
+    expect(dateValidation("2026-04-30")).toBe(true);
+  });
+  it("rejects an invalid month length (April)", () => {
+    expect(dateValidation("2026-04-31")).toBe(false);
+  });
+  it("accepts a valid month length (February)", () => {
+    expect(dateValidation("2026-02-28")).toBe(true);
+  });
+  it("rejects an invalid month length (February)", () => {
+    expect(dateValidation("2026-02-30")).toBe(false);
+  });
+  it("accepts a valid leap year date (February)", () => {
+    expect(dateValidation("2024-02-29")).toBe(true);
+  });
+  it("accepts a valid leap year date (February)", () => {
+    expect(dateValidation("2000-02-29")).toBe(true);
+  });
+  it("rejects an invalid leap year date (February)", () => {
+    expect(dateValidation("1900-02-29")).toBe(false);
+  });
+  it("rejects an invalid leap year date (February)", () => {
+    expect(dateValidation("2026-02-29")).toBe(false);
+  });
+
 });
