@@ -346,7 +346,7 @@ Completion evidence:
 - the owner supplied successful output from `npm run build` (TypeScript and Vite),
 - implementation commit: aea6a92, before any documentation amendment; it includes code and project documentation.
 
-Next work package: TASK 005E.2 semantic storage validation. Parameterizing existing tests remains optional and must not delay the UI.
+Follow-up TASK 005E.2 is now also complete (see below). Parameterizing existing tests remains optional and must not delay the UI.
 
 Goal:
 
@@ -380,11 +380,22 @@ Verification before completion:
 - code review,
 - focused commit.
 
-## 8. Current task — TASK 005E.2
+## 8. Completed task — TASK 005E.2
 
 ### Semantic validation of stored bookings
 
-Status: Planned immediately after TASK 005E.1.
+Status: Implemented, reviewed and verified on 2026-10-13; awaiting commit.
+
+Completion evidence:
+- isBooking reuses dateValidation and timeValidation after structural checks,
+- id, roomId and userId must be positive safe integers,
+- loadBookings rejects duplicate booking IDs while allowing shared room/user IDs,
+- regression coverage rejects stored `9:00` times and reversed valid-format time ranges,
+- tests verify invalid dates, all three identifier fields, duplicate IDs, valid multiple bookings and preservation of semantically invalid stored data,
+- Codex ran the full suite: 93/93 tests passed across two files,
+- the owner supplied successful `npm run build` output (TypeScript and Vite, built in 61 ms).
+
+Next work package: TASK 006 minimal UI before publication.
 
 Goal:
 
@@ -581,7 +592,7 @@ Do not postpone public publication or job applications for these items.
 
 1. TASK 005E.1 is complete with 74 passing tests and a successful build.
 2. The owner handles any documentation amendment and push of the completed work.
-3. Complete and verify TASK 005E.2 within the agreed scope.
+3. TASK 005E.2 is complete with 93 passing tests and a successful build; commit and push its code, tests and documentation together.
 4. Implement TASK 006 minimal UI and manually verify its main flow, targeting completion on 2026-10-13.
 5. Complete TASK 005F: CI, concise README, risk/evidence map and final publication checks.
 6. Prepare hosting and publish the repository and website demo after the minimal UI is ready.

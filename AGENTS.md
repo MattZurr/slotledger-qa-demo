@@ -338,13 +338,13 @@ Do not modify storage validation in this subtask.
 
 ### TASK 005E.2 — Semantic validation of stored bookings
 
-Start only after TASK 005E.1 is completed and verified.
+Completed and verified on 2026-10-13; awaiting commit. Codex ran 93/93 passing tests across two files. The owner supplied a successful `npm run build` result (TypeScript and Vite). Next task: TASK 006 minimal UI.
 
 Goal:
 
 Prevent stored data from violating assumptions used by booking business logic.
 
-Required behavior to discuss and implement:
+Implemented behavior:
 
 - keep structural validation,
 - validate stored `date` using `dateValidation()`,
@@ -515,7 +515,7 @@ Do not delay publication or applications for these items.
 2. Inspect current `main`.
 3. TASK 005E.1 is implemented, reviewed, tested and committed; the owner handles any documentation amendment and push.
 4. Keep documentation with related code commits when practical; separate documentation commits are not required.
-5. Complete and verify the agreed TASK 005E.2 scope as the next package.
+5. TASK 005E.2 is complete and verified; the owner commits and pushes storage code, tests and documentation together.
 6. Build and manually verify TASK 006 minimal UI, targeting 2026-10-13 completion.
 7. Complete TASK 005F: CI, concise README, risk/evidence map and publication checks.
 8. Prepare hosting, publish the repository and demo, verify the deployed flow, and link them from LinkedIn/CV.
