@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   canCreateBooking,
   timeValidation,
@@ -12,93 +12,93 @@ import type { Room } from "../models/room";
 import type { Booking } from "../models/booking";
 
 describe("timeValidation", () => {
-  it("accepts a valid same-day time range", () => {
+  test("accepts a valid same-day time range", () => {
     expect(timeValidation("09:00", "17:00")).toBe(true);
   });
-  it("rejects an invalid time format", () => {
+  test("rejects an invalid time format", () => {
     expect(timeValidation("9:00", "17:00")).toBe(false);
   });
-  it("rejects the same start and end time", () => {
+  test("rejects the same start and end time", () => {
     expect(timeValidation("09:00", "09:00")).toBe(false);
   });
-  it("rejects the end time before the start time", () => {
+  test("rejects the end time before the start time", () => {
     expect(timeValidation("17:00", "09:00")).toBe(false);
   });
-  it("rejects bookings crossing midnight", () => {
+  test("rejects bookings crossing midnight", () => {
     expect(timeValidation("23:00", "01:00")).toBe(false);
   });
-  it("accepts a one minute case1", () => {
+  test("accepts a one minute case1", () => {
     expect(timeValidation("00:00", "00:01")).toBe(true);
   });
-  it("accepts a one minute case2", () => {
+  test("accepts a one minute case2", () => {
     expect(timeValidation("23:58", "23:59")).toBe(true);
   });
-  it("accepts a one-minute booking across an hour boundary", () => {
+  test("accepts a one-minute booking across an hour boundary", () => {
     expect(timeValidation("09:59", "10:00")).toBe(true);
   });
-  it("rejects out-of-range hours", () => {
+  test("rejects out-of-range hours", () => {
     expect(timeValidation("24:00", "25:00")).toBe(false);
   });
-  it("rejects an out-of-range end hour", () => {
+  test("rejects an out-of-range end hour", () => {
     expect(timeValidation("09:00", "24:00")).toBe(false);
   });
-  it("rejects an out-of-range start minute", () => {
+  test("rejects an out-of-range start minute", () => {
     expect(timeValidation("09:60", "11:00")).toBe(false);
   });
-  it("rejects an out-of-range end minute", () => {
+  test("rejects an out-of-range end minute", () => {
     expect(timeValidation("09:00", "10:60")).toBe(false);
   });
-  it("rejects lack of minutes", () => {
+  test("rejects lack of minutes", () => {
     expect(timeValidation("09:00", "17:0")).toBe(false);
   });
-  it("rejects wrong separator", () => {
+  test("rejects wrong separator", () => {
     expect(timeValidation("09-00", "17:00")).toBe(false);
   });
-  it("rejects letters instead of numbers", () => {
+  test("rejects letters instead of numbers", () => {
     expect(timeValidation("ab:cd", "17:00")).toBe(false);
   });
-  it("rejects lack of time", () => {
+  test("rejects lack of time", () => {
     expect(timeValidation("", "17:00")).toBe(false);
   });
-  it("rejects extra space", () => {
+  test("rejects extra space", () => {
     expect(timeValidation("09:00", "17:00 ")).toBe(false);
   });
 });
 
 describe("canCreateBooking", () => {
-  it("allows a user with the booker role to create a booking", () => {
+  test("allows a user with the booker role to create a booking", () => {
     const user: User = { id: 1, name: "Alice", role: "booker" };
     expect(canCreateBooking(user)).toBe(true);
   });
-  it("does not allow a user with the viewer role to create a booking", () => {
+  test("does not allow a user with the viewer role to create a booking", () => {
     const user: User = { id: 2, name: "Bob", role: "viewer" };
     expect(canCreateBooking(user)).toBe(false);
   });
 });
 
 describe("roomExists", () => {
-  it("returns true if the room exists", () => {
+  test("returns true if the room exists", () => {
     const rooms: Room[] = [
       { id: 1, name: "Room A", capacity: 10 },
       { id: 2, name: "Room B", capacity: 20 },
     ];
     expect(roomExists(2, rooms)).toBe(true);
   });
-  it("returns false if the room does not exist", () => {
+  test("returns false if the room does not exist", () => {
     const rooms: Room[] = [
       { id: 1, name: "Room A", capacity: 10 },
       { id: 2, name: "Room B", capacity: 20 },
     ];
     expect(roomExists(3, rooms)).toBe(false);
   });
-  it("returns false if the rooms array is empty", () => {
+  test("returns false if the rooms array is empty", () => {
     const rooms: Room[] = [];
     expect(roomExists(1, rooms)).toBe(false);
   });
 });
 
 describe("roomOverlap", () => {
-  it("returns true if there is an overlapping booking", () => {
+  test("returns true if there is an overlapping booking", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -112,7 +112,7 @@ describe("roomOverlap", () => {
     ];
     expect(roomOverlap("09:30", "10:30", 1, bookings, "2024-06-01")).toBe(true);
   });
-  it("returns true if there is an overlapping booking that starts before and ends after the new booking", () => {
+  test("returns true if there is an overlapping booking that starts before and ends after the new booking", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -126,7 +126,7 @@ describe("roomOverlap", () => {
     ];
     expect(roomOverlap("09:30", "10:30", 1, bookings, "2024-06-01")).toBe(true);
   });
-  it("returns true if there is an overlapping booking that starts after and ends before the new booking", () => {
+  test("returns true if there is an overlapping booking that starts after and ends before the new booking", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -140,7 +140,7 @@ describe("roomOverlap", () => {
     ];
     expect(roomOverlap("09:00", "11:00", 1, bookings, "2024-06-01")).toBe(true);
   });
-  it("returns false if the end time of the new booking is the same as the start time of an existing booking", () => {
+  test("returns false if the end time of the new booking is the same as the start time of an existing booking", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -156,7 +156,7 @@ describe("roomOverlap", () => {
       false,
     );
   });
-  it("returns false if the start time of the new booking is the same as the end time of an existing booking", () => {
+  test("returns false if the start time of the new booking is the same as the end time of an existing booking", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -172,7 +172,7 @@ describe("roomOverlap", () => {
       false,
     );
   });
-  it("returns false if the bookings are on different dates", () => {
+  test("returns false if the bookings are on different dates", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -188,7 +188,7 @@ describe("roomOverlap", () => {
       false,
     );
   });
-  it("returns false if the bookings are for different rooms", () => {
+  test("returns false if the bookings are for different rooms", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -204,13 +204,13 @@ describe("roomOverlap", () => {
       false,
     );
   });
-  it("returns false if there are no bookings", () => {
+  test("returns false if there are no bookings", () => {
     const bookings: Booking[] = [];
     expect(roomOverlap("09:00", "10:00", 1, bookings, "2024-06-01")).toBe(
       false,
     );
   });
-  it("returns true for identical time ranges in the same room on the same date", () => {
+  test("returns true for identical time ranges in the same room on the same date", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -224,7 +224,7 @@ describe("roomOverlap", () => {
     ];
     expect(roomOverlap("10:00", "11:00", 1, bookings, "2024-06-01")).toBe(true);
   });
-  it("returns true when only the second existing booking overlaps with the new booking", () => {
+  test("returns true when only the second existing booking overlaps with the new booking", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -247,7 +247,7 @@ describe("roomOverlap", () => {
     ];
     expect(roomOverlap("10:30", "11:30", 1, bookings, "2024-06-01")).toBe(true);
   });
-  it("returns false when the new bookings are completely before/after existing bookings", () => {
+  test("returns false when the new bookings are completely before/after existing bookings", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -278,7 +278,7 @@ describe("createBooking", () => {
     vi.useRealTimers();
   });
 
-  it("creates a new booking and returns success", () => {
+  test("creates a new booking and returns success", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [];
@@ -301,7 +301,7 @@ describe("createBooking", () => {
       },
     });
   });
-  it("rejects booking creation for a viewer", () => {
+  test("rejects booking creation for a viewer", () => {
     const user: User = { id: 7, name: "Bob", role: "viewer" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [];
@@ -316,7 +316,7 @@ describe("createBooking", () => {
       error: "NO_PERMISSION",
     });
   });
-  it("rejects booking creation when the room does not exist", () => {
+  test("rejects booking creation when the room does not exist", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [];
@@ -331,7 +331,7 @@ describe("createBooking", () => {
       error: "ROOM_NOT_FOUND",
     });
   });
-  it("rejects booking creation for an invalid time range", () => {
+  test("rejects booking creation for an invalid time range", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [];
@@ -346,7 +346,7 @@ describe("createBooking", () => {
       error: "INVALID_TIME",
     });
   });
-  it("rejects booking creation when the room is already booked", () => {
+  test("rejects booking creation when the room is already booked", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [
@@ -371,7 +371,7 @@ describe("createBooking", () => {
       error: "ROOM_OVERLAP",
     });
   });
-  it("generates an ID above the highest existing ID for an unsorted list", () => {
+  test("generates an ID above the highest existing ID for an unsorted list", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [
@@ -422,7 +422,7 @@ describe("createBooking", () => {
       },
     });
   });
-  it("does not modify existing bookings", () => {
+  test("does not modify existing bookings", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [
@@ -475,7 +475,7 @@ describe("createBooking", () => {
     });
     expect(bookings).toEqual(bookingsBefore);
   });
-  it("rejects booking creation for an invalid date format", () => {
+  test("rejects booking creation for an invalid date format", () => {
     const user: User = { id: 7, name: "Alice", role: "booker" };
     const rooms: Room[] = [{ id: 12, name: "Room A", capacity: 10 }];
     const bookings: Booking[] = [];
@@ -493,55 +493,55 @@ describe("createBooking", () => {
 });
 
 describe("dateValidation", () => {
-  it("accepts a valid date", () => {
+  test("accepts a valid date", () => {
     expect(dateValidation("2026-06-01")).toBe(true);
   });
-  it("rejects an invalid date format", () => {
+  test("rejects an invalid date format", () => {
     expect(dateValidation("")).toBe(false);
   });
-  it("rejects an invalid date format", () => {
+  test("rejects an invalid date format", () => {
     expect(dateValidation("2026-2-3")).toBe(false);
   });
-  it("rejects an invalid date format", () => {
+  test("rejects an invalid date format", () => {
   expect(dateValidation("2026-02-03 ")).toBe(false);
   });
-  it("rejects an invalid date format", () => {
+  test("rejects an invalid date format", () => {
     expect(dateValidation("2026-02-03\n")).toBe(false);
   });
-  it("rejects an invalid date format", () => { 
+  test("rejects an invalid date format", () => { 
     expect(dateValidation("2026-00-10")).toBe(false);
   });
-  it("rejects an invalid date format", () => { 
+  test("rejects an invalid date format", () => { 
     expect(dateValidation("2026-13-10")).toBe(false);
   });
-  it("rejects an invalid date format", () => { 
+  test("rejects an invalid date format", () => { 
     expect(dateValidation("2026-01-00")).toBe(false);
   });
-  it("rejects an invalid date format", () => { 
+  test("rejects an invalid date format", () => { 
     expect(dateValidation("2026-01-32")).toBe(false);
   });
-  it("accepts a valid month length (April)", () => {
+  test("accepts a valid month length (April)", () => {
     expect(dateValidation("2026-04-30")).toBe(true);
   });
-  it("rejects an invalid month length (April)", () => {
+  test("rejects an invalid month length (April)", () => {
     expect(dateValidation("2026-04-31")).toBe(false);
   });
-  it("accepts a valid month length (February)", () => {
+  test("accepts a valid month length (February)", () => {
     expect(dateValidation("2026-02-28")).toBe(true);
   });
-  it("rejects an invalid month length (February)", () => {
+  test("rejects an invalid month length (February)", () => {
     expect(dateValidation("2026-02-30")).toBe(false);
   });
-  it("accepts a valid leap year date (February)", () => {
+  test("accepts a valid leap year date (February)", () => {
     expect(dateValidation("2024-02-29")).toBe(true);
   });
-  it("accepts a valid leap year date (February)", () => {
+  test("accepts a valid leap year date (February)", () => {
     expect(dateValidation("2000-02-29")).toBe(true);
   });
-  it("rejects an invalid leap year date (February)", () => {
+  test("rejects an invalid leap year date (February)", () => {
     expect(dateValidation("1900-02-29")).toBe(false);
   });
-  it("rejects an invalid leap year date (February)", () => {
+  test("rejects an invalid leap year date (February)", () => {
     expect(dateValidation("2026-02-29")).toBe(false);
   });
 

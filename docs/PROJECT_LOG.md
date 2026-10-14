@@ -7,7 +7,7 @@ SlotLedger is an educational TypeScript room-booking application used as a QA Au
 Main goals:
 - demonstrate practical TypeScript and QA automation skills,
 - learn implementation and testing of business rules,
-- develop automated tests with Vitest and later Playwright,
+- develop automated tests with Vitest and Playwright,
 - create a realistic application for a QA Release Check case study,
 - build a public GitHub repository that can support LinkedIn/CV job applications.
 
@@ -34,12 +34,11 @@ Current:
 - Vite
 - HTML and CSS
 - Vitest
+- Playwright (local Chromium E2E)
 - browser `localStorage`
 - Git and GitHub
-
-Planned:
 - GitHub Actions
-- Playwright
+- GitHub Pages (public static demo)
 
 ## 4. Completed tasks
 
@@ -405,9 +404,10 @@ Creation validation order is permission -> room existence -> time -> date -> ove
 | --- | --- | --- |
 | src/validation/bookingValidator.test.ts | 58 | Time/date rules, permissions, room existence, overlap boundaries, creation failures/success, ID generation, controlled timestamp and non-mutation |
 | src/storage/bookingStorage.test.ts | 35 | Missing/valid/invalid data, structural/semantic validation, IDs and duplicates, read/write exceptions, serialization and preservation |
-| Total | 93 | Vitest tests; parameterized cases counted individually |
+| Vitest subtotal | 93 | Parameterized cases counted individually |
+| e2e/booking.spec.ts | 7 | Local Chromium: creation/persistence, overlap rejection, reversed/equal times, touching boundaries, different rooms/dates |
 
-Storage tests stub localStorage; timestamp tests use a controlled clock. There are no main.ts/DOM tests, Playwright files or browser E2E tests. No coverage percentage was measured. The permission rule has unit coverage, but the current UI does not offer a viewer role.
+Storage tests stub localStorage; timestamp tests use a controlled clock. Vitest does not test the DOM; Playwright exercises the application in a real browser against local Vite. All 93 Vitest cases and seven E2E tests passed locally at the session checkpoint in section 13. GitHub Actions currently runs Vitest/build/deployment only. No coverage percentage was measured. The permission rule has unit coverage, but the current UI does not offer a viewer role.
 
 Effective strict type checking is enabled by the locked TypeScript 6.0.3 compiler defaults. Neither tsconfig nor `tsc --showConfig` explicitly prints the strict flag; the compiler API confirmed the effective strict options (section 12). The earlier conclusion that strict was disabled relied only on a missing explicit entry and was incorrect. No compiler/configuration change was needed or made.
 
@@ -418,7 +418,7 @@ Effective strict type checking is enabled by the locked TypeScript 6.0.3 compile
 - No booking-horizon or future-only rule. Calendar-valid historical dates such as 0001-08-29 are not rejected solely for being old; adding a range requires a separate business decision.
 - Dates use a four-digit year and times use same-day HH:mm. The domain validator does not separately reject year 0000; no minimum-year contract or regression test for it is defined.
 - Storage checks semantics needed by the application; it does not re-check overlaps/current room membership or validate the createdAt string as a timestamp.
-- Automated UI/E2E and deployment evidence are still missing; there is no claim of production readiness.
+- E2E CI, cross-browser and browser storage-failure coverage remain pending. Local Chromium E2E and deployed smoke evidence are recorded separately; neither is a claim of production readiness.
 
 These limitations are not automatic reasons to expand the pre-publication scope. A new blocker must identify a concrete defect affecting the agreed demo.
 
@@ -458,9 +458,9 @@ Corrections applied to documentation:
 - Temporarily remove strict-mode claims based on absence of an explicit config flag; this reasoning was later corrected by effective compiler verification in section 12.
 - Preserve the UI-before-publication decision and distinguish manual checks from automated evidence.
 
-## 12. Current task — TASK 005F: Portfolio foundation
+## 12. Completed task — TASK 005F: Portfolio foundation
 
-Status: Publication implemented and verified at 5fec675. The independent repository is public, GitHub Pages is live, and workflow 38573433621 passed installation, 93 tests, build and deployment. Anonymous privacy checks and the deployed create -> display -> refresh smoke check passed. Final documentation/screenshot synchronization awaits the owner's commit/push to close TASK 005F. See the 2026-10-14 updates below.
+Status: Completed. Public repository, GitHub Pages demo, README/risk map and screenshot are committed/pushed through 442c9d3. Final workflow 38577175482 passed installation, tests, build and deployment. Anonymous privacy checks and the deployed create -> display -> refresh smoke check passed as recorded below. TASK 007 is next.
 
 ### Repository and evidence verification — 2026-10-13
 
@@ -518,7 +518,7 @@ Publication deliverables — current status:
 2. Completed: Pages uses GitHub Actions, with the github-pages environment restricted to the main branch.
 3. Completed: workflow 38573433621 verified npm ci, tests, build and deployment. Further approved main pushes automatically repeat the workflow. Do not merge the previous history back into main.
 4. Completed: actual live URL, assets and create -> display -> refresh -> persists verified by Codex in isolated Chrome.
-5. Remaining synchronization: owner commits/pushes current README, AGENTS, log and screenshot; verify the resulting workflow. Live Demo link and real CI evidence are prepared locally. No extra feature or test scope blocks this step.
+5. Completed: owner committed/pushed final documentation/screenshot at 519602a and the accessible README introduction at 442c9d3; final workflow 38577175482 succeeded. Closure notes may accompany the next related code/configuration commit.
 
 References used for configuration: [Vite GitHub Pages guide](https://vite.dev/guide/static-deploy.html#github-pages), [GitHub Pages availability](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages), [custom Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
@@ -602,6 +602,16 @@ Deployed-browser smoke evidence:
 
 Current README includes the real Live Demo URL, successful CI/deployment run, screenshot and bounded browser evidence. Development approach, risk table, architecture and defect example are retained. These documentation/asset updates are local for the owner's final commit/push; then verify that commit's workflow and close TASK 005F. Recruitment remains scheduled for 2026-10-19/20; no further feature work is required to share the verified public repository/demo.
 
+### TASK 005F closure — 2026-10-14
+
+The owner committed the publication documentation and screenshot at `519602adae14cdb1ce979ccd94691441fe3e8fb8`. At their request, Codex then simplified the README opening and feature list for nontechnical readers, retaining the risk table, architecture, regression example, evidence and Development approach. The owner committed that change at `442c9d345f19cbf98a3a75e5b3a8e2fb03266999` and pushed both commits.
+
+Codex verified a clean working tree before this closure update, local main/origin/main and GitHub main at 442c9d3, and the [successful final push-triggered workflow 38577175482](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38577175482): Test and build job 115897243796 passed installation/tests/build/artifact upload; Deploy to GitHub Pages job 115897366233 passed configuration/deployment. Publication and the earlier browser smoke result remain valid; application/configuration code was unchanged by these documentation commits, so local tests/build and live-browser checks were not repeated.
+
+TASK 005F is closed. README evidence links can retain the actual verified publication run rather than being rewritten after every documentation commit. These closure notes may accompany the next related commit; they do not create another pre-publication correction round.
+
+Next bounded milestone: TASK 007A, minimal Playwright configuration and the first create -> display -> refresh -> persists test, initially Chromium only. Dependency/browser installation awaits explicit owner approval. Codex prepares tooling/configuration with explanations; the owner implements the test with guidance. No E2E test or Playwright installation is claimed at this point.
+
 ### Recruitment schedule clarification — 2026-10-14
 
 The owner plans to start actively sending CVs and LinkedIn applications on Monday 2026-10-19 or Tuesday 2026-10-20. Until Monday, the priority is focused development of SlotLedger: complete TASK 005F/publication first, then advance TASK 007 and, if time permits, TASK 008. Completion of the full roadmap is not a prerequisite for beginning applications. This supersedes earlier wording implying that applications are already being sent. Commit, push, dependency installation and publication approval requirements remain unchanged.
@@ -610,11 +620,48 @@ The owner plans to start actively sending CVs and LinkedIn applications on Monda
 
 ### TASK 007 — Playwright E2E
 
-Status: Planned, not installed or implemented. Begin immediately after publication; it does not block the first public demo.
+Status: In progress. TASK 007A setup and the initial booking-persistence milestone are complete locally. Seven maintained Chromium tests passed; CI E2E integration remains pending. The recovery-after-invalid-time scenario is deferred to the next session. See the session checkpoint below for the final results and scope.
 
-First flow: `create booking -> booking appears -> refresh -> booking persists`.
+### TASK 007A setup — 2026-10-14
 
-Then cover overlap rejection and relevant failure paths. Use role/label locators, web-first assertions and useful failure traces/screenshots, without artificial sleeps. Viewer E2E requires an agreed way to choose a viewer identity; the current UI always uses a booker.
+The owner approved installing @playwright/test and Chromium, and asked how to work with Playwright from VS Code. Codex installed @playwright/test 1.64.1 (playwright/playwright-core 1.64.1 in the lockfile) and its matching Chromium 156.0.8078.4, headless shell and required FFmpeg in the local Playwright browser cache. No external client or VS Code extension was installed.
+
+Prepared locally:
+- playwright.config.ts: e2e test directory, Chromium project, baseURL http://127.0.0.1:4173/slotledger-qa-demo/, list/HTML reports and traces retained on failure. The runner starts Vite automatically on 127.0.0.1:4173 with strictPort and refuses to silently reuse another server.
+- package.json scripts: test:e2e, test:e2e:ui and test:e2e:report.
+- vitest.config.ts preserves the default exclusions and excludes e2e/** so Vitest does not execute Playwright files. Existing Vite base and application/TypeScript configuration were unchanged.
+- Existing .gitignore already excludes Playwright reports/results, so no ignore edit was needed. The publication workflow remains unit tests/build/deployment; E2E CI integration is not implemented in this step.
+
+Actual verification on Node.js 22.14.0:
+- With a temporary Playwright file present, npm run test:run passed all 93 existing Vitest cases, confirming runner separation.
+- npm run build passed, TypeScript then Vite 8.3.0.
+- npm run test:e2e -- e2e/setup-check.spec.ts passed one temporary Chromium check: automatic Vite startup, navigation using the project base, visible Book a room heading and enabled Create booking button. The temporary file was removed after verification; this is setup evidence, not the booking-persistence regression test or a permanent test-count increase.
+- No application logic, UI or existing unit test was changed. The previously recorded source-map-js advisory remains; no unrelated dependency fix was run.
+
+At setup completion, the next owner task was to create e2e/booking.spec.ts and implement create -> display -> refresh -> persists. This is now implemented and verified at the session checkpoint below. Tests use isolated browser contexts, role/label locators and web-first assertions; no shared browser profile is needed. VS Code and its terminal are sufficient; the official Playwright Test extension is optional. The temporary setup check was removed before the maintained suite was written.
+
+References: [Playwright webServer/baseURL](https://playwright.dev/docs/test-webserver), [VS Code integration](https://playwright.dev/docs/getting-started-vscode), [browser installation](https://playwright.dev/docs/browsers), [Vitest exclusions](https://vitest.dev/config/exclude).
+
+First owner-written browser test — 2026-10-14, historical intermediate result: Codex reviewed and ran the initial version of e2e/booking.spec.ts. Result: **1/1 passed in Chromium**. At that point it navigated using ./ and checked only the visible Book a room heading. It was subsequently expanded into the maintained booking-persistence test. No test source change was made by Codex. A repository check found no Cypress configuration or Cypress dependency; the existing 93 storage/validator tests use Vitest and are not Cypress/E2E tests.
+
+### TASK 007A initial suite - session checkpoint 2026-10-14
+
+At the owner's request, documentation was updated at the end of the session rather than after each test. The initial setup/booking-persistence milestone is complete locally; broader TASK 007 remains in progress.
+
+The owner implemented seven maintained Chromium tests in e2e/booking.spec.ts with mentoring and review: create/display/reload/persist; overlap rejection with the original booking unchanged before and after reload; reversed times; touching boundaries; simultaneous bookings in different rooms; identical times on different dates; equal start/end rejection. Codex explained Codegen output, locator re-evaluation, list assertions and isolated contexts, and reviewed the owner's test changes. The recovery-after-invalid-time scenario is deferred to the next session and is not implemented.
+
+With explicit owner authorization, Codex renamed Vitest imports/declarations from it to test, including test.each, in both existing unit-test files. Descriptions, assertions and business behavior were preserved. No application logic/UI or CI workflow changed.
+
+Final actual checks on the current local working tree:
+- npm.cmd run test:e2e -- e2e/booking.spec.ts: **7/7 passed in Chromium**.
+- npm.cmd run test:run: **93/93 passed across two files**.
+- npm.cmd run build: **passed**, TypeScript and Vite 8.3.0.
+
+Some earlier E2E attempts stopped before execution because the owner's Playwright UI occupied port 4173. After the owner stopped UI, the final full run passed. This was a runner/server contention issue, not an application defect. PowerShell argument forwarding worked with npm.cmd/npx.cmd where bare npm had dropped options during manual Codegen setup.
+
+README now includes local browser-test/UI/report instructions and distinguishes local E2E evidence from the existing Vitest/build/Pages workflow. AGENTS records the checkpoint and next scenario. The Development approach section is preserved. No successful E2E CI run or new deployment is claimed. Commits and pushes remain owner-controlled; these changes are prepared for the owner's commit.
+
+Next session: implement invalid time -> correct end time without reload -> successful booking -> previous error disappears. Then integrate E2E into CI and verify the actual run/report. Viewer E2E requires an agreed way to choose a viewer identity; the current UI always uses a booker.
 
 ### TASK 008 — QA Release Check case study
 

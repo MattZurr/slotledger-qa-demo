@@ -1,12 +1,12 @@
 import { loadBookings, saveBookings } from "../storage/bookingStorage";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, test, expect, vi, afterEach } from "vitest";
 import type { Booking } from "../models/booking";
 
 describe("loadBookings", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
-  it("returns success with an empty bookings list", () => {
+  test("returns success with an empty bookings list", () => {
     const getItem = vi.fn().mockReturnValue(null);
     vi.stubGlobal("localStorage", { getItem });
     expect(loadBookings()).toEqual({
@@ -15,7 +15,7 @@ describe("loadBookings", () => {
     });
     expect(getItem).toHaveBeenCalledWith("slotledger.bookings");
   });
-  it("returns bookings from valid stored data", () => {
+  test("returns bookings from valid stored data", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -34,7 +34,7 @@ describe("loadBookings", () => {
       bookings: bookings,
     });
   });
-  it("returns an error for malformed JSON", () => {
+  test("returns an error for malformed JSON", () => {
     const getItem = vi.fn().mockReturnValue("{broken");
     vi.stubGlobal("localStorage", { getItem });
     expect(loadBookings()).toEqual({
@@ -42,7 +42,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it("returns an error when stored JSON is not an array", () => {
+  test("returns an error when stored JSON is not an array", () => {
     const getItem = vi.fn().mockReturnValue(JSON.stringify({}));
     vi.stubGlobal("localStorage", { getItem });
     expect(loadBookings()).toEqual({
@@ -50,7 +50,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it("returns an error when stored array contains null", () => {
+  test("returns an error when stored array contains null", () => {
     const getItem = vi.fn().mockReturnValue(JSON.stringify([null]));
     vi.stubGlobal("localStorage", { getItem });
     expect(loadBookings()).toEqual({
@@ -58,7 +58,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it("returns an error when stored array contains a number", () => {
+  test("returns an error when stored array contains a number", () => {
     const getItem = vi.fn().mockReturnValue(JSON.stringify([123]));
     vi.stubGlobal("localStorage", { getItem });
     expect(loadBookings()).toEqual({
@@ -66,7 +66,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it("returns an error when a stored booking is missing createdAt", () => {
+  test("returns an error when a stored booking is missing createdAt", () => {
     const bookings = [
       {
         id: 1,
@@ -84,7 +84,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it("returns an error when a stored booking has a non-numeric roomId", () => {
+  test("returns an error when a stored booking has a non-numeric roomId", () => {
     const bookings = [
       {
         id: 1,
@@ -103,7 +103,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it("returns an error when stored array contains valid and invalid bookings", () => {
+  test("returns an error when stored array contains valid and invalid bookings", () => {
     const bookings = [
       {
         id: 1,
@@ -131,7 +131,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it("returns success when stored array is empty", () => {
+  test("returns success when stored array is empty", () => {
     const getItem = vi.fn().mockReturnValue(JSON.stringify([]));
     vi.stubGlobal("localStorage", { getItem });
     expect(loadBookings()).toEqual({
@@ -139,7 +139,7 @@ describe("loadBookings", () => {
       bookings: [],
     });
   });
-  it("does not modify stored data when JSON is malformed", () => {
+  test("does not modify stored data when JSON is malformed", () => {
     const getItem = vi.fn().mockReturnValue("{broken");
     const setItem = vi.fn();
     const removeItem = vi.fn();
@@ -153,7 +153,7 @@ describe("loadBookings", () => {
     expect(removeItem).not.toHaveBeenCalled();
     expect(clear).not.toHaveBeenCalled();
   });
-  it("does not modify stored data when its structure is invalid", () => {
+  test("does not modify stored data when its structure is invalid", () => {
     const getItem = vi.fn().mockReturnValue(JSON.stringify([null]));
     const setItem = vi.fn();
     const removeItem = vi.fn();
@@ -167,7 +167,7 @@ describe("loadBookings", () => {
     expect(removeItem).not.toHaveBeenCalled();
     expect(clear).not.toHaveBeenCalled();
   });
-  it("returns STORAGE_READ_ERROR when reading storage throws", () => {
+  test("returns STORAGE_READ_ERROR when reading storage throws", () => {
     const getItem = vi.fn().mockImplementation(() => {
       throw new Error("Storage access denied");
     });
@@ -177,7 +177,7 @@ describe("loadBookings", () => {
       error: "STORAGE_READ_ERROR",
     });
   });
-  it("rejects a booking with an invalid date format (February 30th)", () => {
+  test("rejects a booking with an invalid date format (February 30th)", () => {
     const bookings = [
       {
         id: 1,
@@ -207,7 +207,7 @@ describe("loadBookings", () => {
     expect(removeItem).not.toHaveBeenCalled();
     expect(clear).not.toHaveBeenCalled();
   });
-  it.each(["9:00", "10:0", "10:00:00"])(
+  test.each(["9:00", "10:0", "10:00:00"])(
     "rejects a booking with an invalid hour format",
     (invalidStartTime) => {
       const bookings = [
@@ -229,7 +229,7 @@ describe("loadBookings", () => {
       });
     },
   );
-  it("rejects an end time before the start time", () => {
+  test("rejects an end time before the start time", () => {
     const bookings = [
       {
         id: 1,
@@ -248,7 +248,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])(
     "rejects booking id %s",
     (invalidId) => {
       const booking: Booking = {
@@ -268,7 +268,7 @@ describe("loadBookings", () => {
       });
     },
   );
-  it.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])(
     "rejects room id %s",
     (invalidId) => {
       const booking: Booking = {
@@ -288,7 +288,7 @@ describe("loadBookings", () => {
       });
     },
   );
-  it.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])(
     "rejects user id %s",
     (invalidId) => {
       const booking: Booking = {
@@ -308,7 +308,7 @@ describe("loadBookings", () => {
       });
     },
   );
-  it("rejects duplicate booking ids", () => {
+  test("rejects duplicate booking ids", () => {
     const booking1: Booking = {
       id: 1,
       roomId: 12,
@@ -336,7 +336,7 @@ describe("loadBookings", () => {
       error: "INVALID_STORED_DATA",
     });
   });
-  it("accepts a booking with different ids but the same roomId and userId", () => {
+  test("accepts a booking with different ids but the same roomId and userId", () => {
     const booking1: Booking = {
       id: 1,
       roomId: 12,
@@ -370,7 +370,7 @@ describe("saveBookings", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
-  it("saves bookings as JSON and returns success", () => {
+  test("saves bookings as JSON and returns success", () => {
     const bookings: Booking[] = [
       {
         id: 1,
@@ -401,7 +401,7 @@ describe("saveBookings", () => {
       JSON.stringify(bookings),
     );
   });
-  it("returns STORAGE_WRITE_ERROR when writing storage throws", () => {
+  test("returns STORAGE_WRITE_ERROR when writing storage throws", () => {
     const setItem = vi.fn().mockImplementation(() => {
       throw new Error("Storage access denied");
     });
@@ -411,7 +411,7 @@ describe("saveBookings", () => {
       error: "STORAGE_WRITE_ERROR",
     });
   });
-  it("saves an empty bookings array", () => {
+  test("saves an empty bookings array", () => {
     const setItem = vi.fn();
     vi.stubGlobal("localStorage", { setItem });
     expect(saveBookings([])).toEqual({

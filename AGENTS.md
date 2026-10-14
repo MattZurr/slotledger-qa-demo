@@ -2,9 +2,9 @@
 
 ## Purpose and current status
 
-SlotLedger is an educational TypeScript room-booking application and QA Automation portfolio project. The owner is preparing for a job change and plans to start actively sending applications on 2026-10-19 or 2026-10-20. Until Monday, prioritize focused project development, beginning with completion of TASK 005F and a credible public repository/demo.
+SlotLedger is an educational TypeScript room-booking application and QA Automation portfolio project. The owner is preparing for a job change and plans to start actively sending applications on 2026-10-19 or 2026-10-20. TASK 005F and public publication are complete. Until Monday, prioritize focused development within TASK 007, then TASK 008 as time permits.
 
-Current stack: TypeScript, Vite, HTML/CSS, Vitest, browser localStorage, Git and GitHub. No framework, backend or database.
+Current stack: TypeScript, Vite, HTML/CSS, Vitest, Playwright, browser localStorage, Git and GitHub. No application framework, backend or database.
 
 Current status as of 2026-10-14:
 - TASK 005E.1 date validation and TASK 005E.2 semantic storage validation are completed and committed.
@@ -12,13 +12,14 @@ Current status as of 2026-10-14:
 - Codex ran `npm run test:run`: 93/93 tests passed across two files.
 - Codex ran `npm run build`: TypeScript/Vite build passed.
 - Detailed history, commit references and evidence limits belong in [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md).
-- TASK 005F publication is implemented and verified at 5fec675. Workflow run 38573433621 passed npm ci, 93 tests, build and GitHub Pages deployment on Node.js 22.23.3. Final README/log/status updates and a real screenshot are prepared locally for the owner's commit/push before closing the task. Playwright is not installed or configured.
+- TASK 005F is completed: public repository, live Pages demo, professional README/risk map and screenshot are committed/pushed through 442c9d3. Final workflow run 38577175482 passed npm ci, 93 tests, build and deployment.
+- TASK 007A initial suite is verified locally: seven owner-written Chromium tests in e2e/booking.spec.ts passed on 2026-10-14, covering creation/persistence, overlap rejection, reversed/equal times, touching boundaries and different rooms/dates. Vitest 93/93 and build also passed. E2E is not integrated into CI.
 - With explicit owner approval, the original repository was retained as private slotledger-qa-demo-private-archive and independent slotledger-qa-demo (ID 1418948555) was made public. Pages uses GitHub Actions; the github-pages environment allows only the main branch. The owner approved publication and deployment; do not request that approval again for this agreed workflow.
 - Anonymous GitHub API verified 23 noreply commits, unavailability of all 22 original SHAs in the public repository and unavailability of the private archive. Keep the archive private. Repository: https://github.com/MattZurr/slotledger-qa-demo ; live demo: https://mattzurr.github.io/slotledger-qa-demo/ .
-- Codex verified the deployed create -> display -> refresh -> persists flow in an isolated Chrome profile (one-off CDP smoke check), and HTTP 200 for JS, CSS and favicon. This is separate from Vitest, earlier owner manual checks and a future maintained Playwright suite; details are in PROJECT_LOG.md.
-- npm audit reported one high finding in transitive development dependency source-map-js 1.2.1. No dependency change is authorized; the build-tooling risk assessment is in PROJECT_LOG.md.
+- Codex verified the deployed create -> display -> refresh -> persists flow in an isolated Chrome profile (one-off CDP smoke check), and HTTP 200 for JS, CSS and favicon. This is separate from Vitest, earlier owner manual checks and the maintained local Playwright suite; details are in PROJECT_LOG.md.
+- npm audit reported one high finding in transitive development dependency source-map-js 1.2.1. Its patch update remains unapproved; Playwright installation was approved separately. The build-tooling risk assessment is in PROJECT_LOG.md.
 
-Next step within TASK 005F: owner commits/pushes the final documentation and screenshot, then verify that commit's workflow and close TASK 005F. Publication and live-flow verification are complete; do not repeat them without a relevant change or concern. TASK 007 follows this final synchronization. Do not restart completed validation/UI tasks.
+Next step: continue TASK 007 with the owner-written recovery scenario (invalid time -> correct end time -> successful booking -> previous error disappears), deferred to the next session. Then integrate E2E into CI and publish its evidence. Playwright setup and normal runs are already authorized. Stop the owner's Playwright UI before a separate run: both use port 4173. Git commits/push remain owner-controlled. Do not reopen publication or repeat successful checks without a relevant change or concern.
 
 ## Working style and authorization
 
@@ -33,6 +34,7 @@ Next step within TASK 005F: owner commits/pushes the final documentation and scr
 9. Before proposing the next task, read PROJECT_LOG.md and inspect the repository state. Report disagreements among code, Git history and documentation rather than guessing.
 10. Preserve agreed behavior. Keep requirements bounded; optional review comments do not require extra correction rounds.
 11. Test concrete risks and agreed boundaries, not a target test count. Parameterization and test cleanup are optional when they do not improve correctness.
+12. Update docs/PROJECT_LOG.md after completing a bounded task (for example TASK 006 or TASK 007A), not after each instruction, edit or test run. Keep interim progress in the conversation; include related log changes in the task's final commit.
 
 ## Architecture and contracts to preserve
 
@@ -83,10 +85,10 @@ Separate automated tests, source review, owner-reported manual checks and deploy
 
 ## Publication roadmap
 
-Completed: TASK 005E.1 -> TASK 005E.2 -> TASK 006.
-Remaining: TASK 005F -> publish repository and hosted demo -> TASK 007 -> TASK 008. Task numbers reflect history, not current execution order.
+Completed: TASK 005E.1 -> TASK 005E.2 -> TASK 006 -> TASK 005F -> public repository and hosted demo.
+Remaining: TASK 007 -> TASK 008. Task numbers reflect history, not current execution order.
 
-TASK 005F is the current bounded milestone:
+TASK 005F publication deliverables are complete:
 - Prepared workflow: `npm ci` -> `npm run test:run` -> `npm run build`, on pushes to main and pull requests, with Node.js 22. Pages deployment depends on successful verification and runs only on main pushes or manual main runs; PR jobs have no deployment permissions.
 - Review and commit the prepared recruiter-oriented README and its business-rule -> risk -> test-evidence map with the owner; keep claims synchronized with actual local/CI/deployment results.
 - Verify the actual CI run and link its evidence. No badge implying successful CI before a successful run exists.
