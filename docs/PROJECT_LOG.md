@@ -25,7 +25,7 @@ The repository is the source of truth for current code.
 
 This log is the source of truth for major project decisions, task history and roadmap.
 
-Commit references in this log use the equivalent local IDs after the authorized email-only history rewrite on 2026-10-14. Historical push and remote-audit statements describe the original equivalent commits; the rewritten history has not yet been pushed. See the email-privacy update in section 12.
+Commit references in this log use the equivalent IDs after the authorized email-only history rewrite on 2026-10-14. Historical push and remote-audit statements describe the original equivalent commits. The owner subsequently pushed the rewritten history at 5fec675; see the email-privacy and first remote-verification updates in section 12.
 
 ## 3. Technology
 
@@ -460,7 +460,7 @@ Corrections applied to documentation:
 
 ## 12. Current task — TASK 005F: Portfolio foundation
 
-Status: In progress. README/risk map, GitHub Actions CI/Pages workflow and Vite base configuration are prepared locally. Local tests/build pass; owner approval, actual CI execution and public deployment verification remain pending. See the 2026-10-14 update below.
+Status: Publication implemented and verified at 5fec675. The independent repository is public, GitHub Pages is live, and workflow 38573433621 passed installation, 93 tests, build and deployment. Anonymous privacy checks and the deployed create -> display -> refresh smoke check passed. Final documentation/screenshot synchronization awaits the owner's commit/push to close TASK 005F. See the 2026-10-14 updates below.
 
 ### Repository and evidence verification — 2026-10-13
 
@@ -513,12 +513,12 @@ Publication content/history review:
 - At review time, commit author/committer metadata contained one private email address. The owner subsequently declined its public exposure and authorized the local rewrite described below. The address is intentionally not copied into this log.
 - This is a bounded local review, not a guarantee that no secret exists. Remote-only refs, unreachable Git objects, GitHub settings and external attachments were not audited; remote refs were not refreshed during this preparation.
 
-Remaining **blocking before publication** steps:
-1. Owner reviews/commits prepared changes and authorizes updating remote main with the rewritten history. Local commit-email replacement is complete; remote history is not yet updated. Repository visibility and public deployment still require approval.
-2. Make the repository public for the agreed free Pages setup; in Settings -> Pages choose GitHub Actions as the source. Restrict the github-pages environment deployment branch to main. No account setting was changed by Codex.
-3. Push the reviewed changes and rewritten main history after approval, using an explicit force-with-lease check against the actual remote head. Do not merge the previous history back into main. With Pages enabled, this triggers verification followed by deployment automatically. If CI was pushed earlier while Pages was unavailable, configure Pages and manually run the workflow on main; it repeats tests/build before deployment.
-4. Verify the actual successful CI/deployment run and its artifact URL; check create -> display -> refresh -> persists at the live site.
-5. Add the verified Live Demo link and CI evidence/status to README, then use the public repository/demo in applications. A screenshot is optional and must not delay publication.
+Publication deliverables — current status:
+1. Completed: approved migration and publication of the independent slotledger-qa-demo; original archive remains private. Anonymous requests cannot retrieve any of the 22 original commits in the new repository.
+2. Completed: Pages uses GitHub Actions, with the github-pages environment restricted to the main branch.
+3. Completed: workflow 38573433621 verified npm ci, tests, build and deployment. Further approved main pushes automatically repeat the workflow. Do not merge the previous history back into main.
+4. Completed: actual live URL, assets and create -> display -> refresh -> persists verified by Codex in isolated Chrome.
+5. Remaining synchronization: owner commits/pushes current README, AGENTS, log and screenshot; verify the resulting workflow. Live Demo link and real CI evidence are prepared locally. No extra feature or test scope blocks this step.
 
 References used for configuration: [Vite GitHub Pages guide](https://vite.dev/guide/static-deploy.html#github-pages), [GitHub Pages availability](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages), [custom Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
@@ -537,6 +537,70 @@ Completed locally:
 - Updated current README, AGENTS and log references to the equivalent new commit IDs. Historical document contents inside old commits were preserved, including their original textual commit references. The README regression-test link now targets the rewritten commit and will become available on GitHub after the remote update.
 
 No new TASK 005F commit, push, visibility change or deployment was performed. Cached origin/main and the private remote still contain the previous history; local backups/reflogs also retain it for recovery. This operation does not claim deletion of old objects from GitHub. Check remote refs and any remaining access to original commits before making the repository public. Tests/build were not repeated because application/configuration content was unchanged from the successful local checks above.
+
+### First remote verification — 2026-10-14
+
+The owner created commit `5fec675ae4a97273d92dc6f95128ac4b353e1534` (ci: prepare GitHub Pages deployment and portfolio documentation), covering the five planned files, and pushed main using explicit force-with-lease. Codex confirmed local HEAD, origin/main and GitHub main at that commit. Working tree was clean at verification start. GitHub API confirms private visibility.
+
+Actual [workflow run 38560762472](https://github.com/MattZurr/slotledger-qa-demo-private-archive/actions/runs/38560762472), triggered by push in the original repository (now the private archive):
+- [Test and build job](https://github.com/MattZurr/slotledger-qa-demo-private-archive/actions/runs/38560762472/job/115840950164): **success** on Ubuntu 24.04, Node.js 22.23.3/npm 10.9.9. Logs confirm npm ci, 93/93 Vitest tests (58 validation/creation, 35 storage), TypeScript/Vite build, and successful upload of the Pages artifact.
+- [Deploy to GitHub Pages job](https://github.com/MattZurr/slotledger-qa-demo-private-archive/actions/runs/38560762472/job/115841052651): **failure** at Configure Pages. The API returned Not Found and requested enabling Pages/configuring GitHub Actions as the source. Deploy was skipped; no public deployment or live URL is verified.
+- Overall workflow conclusion is **failure**, despite successful test/build verification. Do not add a badge implying a green whole workflow. The PR trigger is configured but no actual PR run has been verified.
+
+**Publication blocker identified at this review — email privacy:** authenticated GitHub API still retrieved the original TASK 006 commit by its pre-rewrite SHA and returned the private email in metadata. This was not evidence of anonymous access while the repository was private, but proved the old object remained retrievable. A force push alone did not establish safe public exposure. GitHub documents that old commits may remain accessible through cached SHA views and that cleanup can require Support; Support acceptance is not guaranteed ([GitHub guidance](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository)). The subsequent approved migration below resolves this finding for the new publication repository, without claiming deletion from the private archive.
+
+Publication alternatives presented at this review (the owner subsequently selected the first):
+- Keep the current repository private under an archive name and create a new independent repository (not a fork) under slotledger-qa-demo. Push only rewritten main, preserving its 23-commit history. Verify original SHAs are unavailable in the new repository before public release. This is the recommended bounded path; no rename, repository creation or visibility change has been performed.
+- Keep this repository private while asking GitHub Support whether it can purge original commit objects/cached views; verify the result before publication. No support message was sent.
+
+**Valuable after publication — build-tooling maintenance:** CI npm ci reported one high-severity advisory. A read-only local npm audit --json confirmed source-map-js 1.2.1, a transitive dev dependency via PostCSS/Vite, affected by [GHSA-68fv-2mgg-jv7q](https://github.com/advisories/GHSA-68fv-2mgg-jv7q); patched version is 1.2.2. The advisory concerns denial of service while processing malicious indexed source maps. Scope assessment: the demo publishes static dist assets and has no user source-map upload/processing flow; no concrete exploit of the hosted booking flow is established. This finding did not cause the CI/deployment failure. A targeted patch update is useful maintenance, subject to owner approval; no npm audit fix, package change or dependency installation was performed. Reassess before adding any untrusted source-map processing.
+
+The documentation update from this review distinguished successful CI test/build from failed deployment and unresolved privacy. It remained local at the time of the subsequent migration; no further local tests/build were repeated because only documentation changed.
+
+### Independent publication repository — 2026-10-14
+
+The owner explicitly approved preserving the original repository as a private archive and creating a new independent slotledger-qa-demo with the rewritten history. Public visibility and public deployment were reserved for a separate approval.
+
+Completed by Codex:
+- Verified the expected remote repository ID, private visibility, main at 5fec675, availability of the archive name, 23 local main commits and noreply author/committer metadata. Created and verified another bundle backup before remote changes.
+- Renamed the original repository (ID 1390725006) to `MattZurr/slotledger-qa-demo-private-archive`, preserving private visibility.
+- Created `MattZurr/slotledger-qa-demo` as an empty independent private repository, not a fork (new ID 1418948555).
+- Verified the new repository identity and empty refs before pushing only refs/heads/main, with automatic tag following disabled. All 23 corrected commits are preserved; local main and origin/main remain at 5fec675. Local uncommitted documentation changes were preserved. No new commit or dependency installation was performed.
+- Checked all 22 original commit SHAs through the new repository's authenticated API: each returned commit-not-found (HTTP 422, No commit found for SHA), with zero originals retrievable. Both repositories remain private. This establishes unavailability in the new repository at verification time; it does not claim removal from backups, the private archive or GitHub storage. Anonymous checks follow publication approval.
+- Existing GitHub connector access does not include the new private repository yet. Verification and migration used the existing Git credential manager credential in memory; no credential value was printed or written to project files. No plugin or dependency was installed.
+
+Actual [new-repository workflow run 38569514723](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38569514723), commit 5fec675:
+- [Test and build](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38569514723/job/115870780271): **success**. Logs confirm Node.js 22.23.3, npm ci, two passing test files/93 passing tests, build and artifact upload.
+- [Deploy to GitHub Pages](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38569514723/job/115870952908): Configure Pages **failed** with Not Found; Deploy **skipped**. Overall run conclusion remains failure. Pages is not enabled, and no successful deployment or live smoke check is claimed.
+- The same high-severity build-tooling advisory remains reported; no dependency change was made.
+
+At this point, the current README CI link was updated to the new repository run and original CI evidence links were preserved under the private archive name. Documentation changes remained local. Public visibility and deployment still awaited separate approval, which the owner subsequently provided as recorded below.
+
+### Public repository and GitHub Pages — 2026-10-14
+
+The owner explicitly approved making only the new slotledger-qa-demo public, enabling GitHub Pages and running the public deployment. Codex completed the approved settings changes and dispatched the existing workflow on main. No new application commit or dependency installation was performed.
+
+Actual publication configuration and privacy evidence:
+- Public repository: https://github.com/MattZurr/slotledger-qa-demo (ID 1418948555), main at `5fec675ae4a97273d92dc6f95128ac4b353e1534`.
+- Authenticated API confirms the original archive (ID 1390725006) remains private. Anonymous API requests cannot access the archive.
+- Anonymous API requests retrieved the public repository and all 23 main commits; every author/committer email uses the approved GitHub noreply address. All 22 original SHAs returned commit-not-found in the new public repository. This does not claim deletion from the private archive or local backups.
+- Pages build_type is workflow (GitHub Actions). The github-pages environment uses custom deployment branch policies allowing the main branch only; no tag pattern is allowed.
+
+Actual successful [workflow run 38573433621](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38573433621), workflow_dispatch on main at 5fec675:
+- [Test and build](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38573433621/job/115884280664): **success**. Logs confirm Node.js 22.23.3, npm ci, two passing files/93 tests, TypeScript/Vite build and Pages artifact upload.
+- [Deploy to GitHub Pages](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38573433621/job/115884407031): **success**, including Configure Pages and Deploy. Overall workflow conclusion: **success**.
+- Verified live URL: https://mattzurr.github.io/slotledger-qa-demo/ . This is the actual configured/deployed URL, not an inferred placeholder.
+- The previously recorded high-severity source-map-js build-tooling advisory remains; no dependency change was authorized or made. It did not block tests/build/deployment.
+
+Deployed-browser smoke evidence:
+- Codex used installed Chrome 155.0.8059.40 headless, viewport 1280 x 900, an isolated temporary profile, and Chrome DevTools Protocol. No Playwright or other package was installed or added to the project.
+- Live index and its referenced JS, CSS and favicon all returned HTTP 200 with the /slotledger-qa-demo/ base.
+- In initially empty browser-local storage: Room A, 2026-10-19, 09:00-10:00 -> native form submission -> success message and one matching card -> page reload -> the same card restored, with the exact same serialized localStorage value and hidden empty state. Passed on 2026-10-14 at 13:42:40 UTC (15:42:40 Warsaw).
+- The successful scenario recorded zero JavaScript exceptions, failed browser requests or HTTP error responses. Screenshot after reload was visually inspected and copied to docs/screenshots/slotledger-demo.png.
+- The first temporary verification attempt read the page before reload finished because of a stale load event in the CDP script. Corrected the helper's event handling and reran successfully. No application defect or source change was involved.
+- This is one deployed-browser smoke scenario, not a maintained Playwright/E2E suite, cross-browser evidence or a new check of storage-error, keyboard or narrow-layout flows. Earlier owner-reported local manual checks remain separate evidence.
+
+Current README includes the real Live Demo URL, successful CI/deployment run, screenshot and bounded browser evidence. Development approach, risk table, architecture and defect example are retained. These documentation/asset updates are local for the owner's final commit/push; then verify that commit's workflow and close TASK 005F. Recruitment remains scheduled for 2026-10-19/20; no further feature work is required to share the verified public repository/demo.
 
 ### Recruitment schedule clarification — 2026-10-14
 

@@ -1,10 +1,12 @@
 # SlotLedger
 
+[Live Demo](https://mattzurr.github.io/slotledger-qa-demo/) · [Verified CI and deployment](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38573433621)
+
 A TypeScript room-booking demo built as a **QA Engineer / QA Automation Engineer portfolio project**. It combines a working browser interface with explicit business rules, runtime data validation and regression tests.
 
 I am building SlotLedger to demonstrate how I connect booking risks to test cases, investigate defects and keep application behavior verifiable. The project shows TypeScript domain modeling, boundary testing with Vitest, controlled clocks, storage mocks and separation of UI, validation and persistence.
 
-**Current status:** the minimal booking UI is implemented and committed. Local tests and build pass. I have prepared a GitHub Actions workflow and GitHub Pages configuration locally; the first CI run and live deployment are still pending. Playwright E2E tests will follow publication.
+**Current status:** the repository is public and the demo is live on GitHub Pages. CI installation, all 93 tests, production build and deployment passed. A deployed-browser smoke check verified create → display → refresh → persists. Playwright E2E tests will follow publication.
 
 ## What works
 
@@ -17,6 +19,8 @@ I am building SlotLedger to demonstrate how I connect booking risks to test case
 
 The interface uses a fixed demo user, Alice, with the `booker` role. Bookings are stored only in the current browser under `slotledger.bookings`.
 
+![SlotLedger live demo showing a saved Room A booking after refresh](docs/screenshots/slotledger-demo.png)
+
 ## Run locally
 
 Use **Node.js 22.x, version 22.12 or newer**, with npm, matching the supported range of the locked tooling. Local verification used Node.js 22.14.0.
@@ -28,7 +32,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. No backend or environment variables are required. Repository access is required while it remains private.
+Open the local URL printed by Vite. No backend or environment variables are required.
 
 ```bash
 npm run test:run  # Run all Vitest tests once
@@ -51,9 +55,13 @@ Tests focus on business boundaries and data consistency. The suite exercises bot
 | Loaded data must satisfy the application's format and identity assumptions | Corrupted state or missed collisions | [Vitest storage tests](src/storage/bookingStorage.test.ts): structural/semantic rejection, positive safe integer IDs and duplicate booking IDs |
 | Invalid stored data must be preserved and access failures reported | Silent data loss or unreported persistence failure | [Vitest storage tests](src/storage/bookingStorage.test.ts): malformed JSON, no write/delete/clear on validation failure, read/write exceptions and JSON serialization |
 
-**Latest local verification — 2026-10-14, application commit `87f9c3b` with local publication configuration:** 93/93 tests passed across two files (58 validation/creation cases and 35 storage cases); `npm run build` passed. Built JS, CSS and favicon paths use `/slotledger-qa-demo/`. These are local results; no CI run or live deployment has been verified.
+**Latest local verification — 2026-10-14, application commit `87f9c3b` with local publication configuration:** 93/93 tests passed across two files (58 validation/creation cases and 35 storage cases); `npm run build` passed. Built JS, CSS and favicon paths use `/slotledger-qa-demo/`.
 
-I also completed manual UI smoke checks: create → display → refresh → persists, overlap rejection, touching boundaries, a different room, reversed times, narrow layout and Tab navigation. These checks are recorded in the [project log](docs/PROJECT_LOG.md#manual-acceptance-evidence). The Vitest suite does not exercise the browser UI; automated E2E, cross-browser coverage and UI storage-failure checks remain future work.
+**Latest CI/deployment verification — 2026-10-14, commit `5fec675`:** the [complete workflow](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38573433621) passed `npm ci`, all 93 tests, the production build and GitHub Pages deployment on Ubuntu/Node.js 22.23.3. The dependency audit reported one high-severity finding in build tooling; its scope is recorded in the [project log](docs/PROJECT_LOG.md#first-remote-verification--2026-10-14).
+
+**Deployed-browser verification — 2026-10-14:** Codex ran a one-off Chrome smoke check at the live URL using an isolated browser profile: create a Room A booking → display its card → refresh → restore the same booking from localStorage. JS, CSS and favicon returned HTTP 200. This verifies one deployed flow; it is not a maintained Playwright suite or cross-browser coverage. Details are recorded in the [publication evidence](docs/PROJECT_LOG.md#public-repository-and-github-pages--2026-10-14).
+
+I also completed local manual UI smoke checks: create → display → refresh → persists, overlap rejection, touching boundaries, a different room, reversed times, narrow layout and Tab navigation. These checks are recorded in the [project log](docs/PROJECT_LOG.md#manual-acceptance-evidence). The Vitest suite does not exercise the browser UI; a maintained E2E suite, cross-browser coverage and UI storage-failure checks remain future work.
 
 ### Defect example: stored time format
 
@@ -81,12 +89,12 @@ Strict type checking is effective with the locked TypeScript 6.0.3 compiler; its
 - Fixed demo user and room catalog; no role switch, booking edit/delete or room management.
 - Same-day bookings only. Past dates are permitted; a future-only policy or booking horizon has not been defined.
 - Storage validation checks individual records and booking-ID uniqueness. It does not re-check all stored overlaps, current room membership or timestamp semantics.
-- Automated tests cover business logic and mocked storage. Browser E2E is not implemented; CI and deployment verification are pending.
+- The maintained automated suite covers business logic and mocked storage. The deployed Chrome smoke check covers one flow; Playwright E2E, cross-browser coverage and browser storage-failure checks remain future work.
 
 ## Roadmap
 
-1. **Portfolio foundation — in progress:** this README, risk/evidence map and [GitHub Actions workflow](.github/workflows/ci-pages.yml) are prepared. The workflow runs `npm ci`, tests and build on pushes to `main` and pull requests using Node.js 22; I still need to verify its first actual run.
-2. **First public release — planned:** publish the repository and deploy the static demo on free GitHub Pages. Deployment runs only from `main` after successful tests/build; I will verify create → display → refresh at the live URL before sharing it.
+1. **Portfolio foundation — verified:** this README, risk/evidence map and [GitHub Actions workflow](.github/workflows/ci-pages.yml). Installation, tests, build and deployment passed. PR verification is configured but has not yet been exercised by an actual PR.
+2. **First public demo — live:** public repository and free GitHub Pages hosting. Deployment runs only from `main` after successful tests/build; the deployed create → display → refresh flow has been verified.
 3. **Playwright E2E — planned after publication:** automate create → display → refresh → persists, followed by overlap rejection and relevant failure paths.
 4. **QA Release Check — planned:** risk-based release scope, defect/regression evidence, known limitations and a documented go/no-go recommendation.
 

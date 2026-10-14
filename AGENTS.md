@@ -8,15 +8,17 @@ Current stack: TypeScript, Vite, HTML/CSS, Vitest, browser localStorage, Git and
 
 Current status as of 2026-10-14:
 - TASK 005E.1 date validation and TASK 005E.2 semantic storage validation are completed and committed.
-- TASK 006 minimal UI is implemented, reviewed and previously pushed. Its equivalent commit after the authorized local email rewrite is 87f9c3b; the rewritten history has not been pushed. The owner reported successful manual checks of the main flows, narrow layout and keyboard navigation.
+- TASK 006 minimal UI is implemented, reviewed and pushed. Its equivalent commit after the authorized email rewrite is 87f9c3b; the rewritten history and TASK 005F preparation were pushed by the owner at 5fec675. The owner reported successful manual checks of the main flows, narrow layout and keyboard navigation.
 - Codex ran `npm run test:run`: 93/93 tests passed across two files.
 - Codex ran `npm run build`: TypeScript/Vite build passed.
 - Detailed history, commit references and evidence limits belong in [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md).
-- TASK 005F is in progress: README, its risk/evidence map, CI/Pages workflow and Vite base configuration are prepared locally. On 2026-10-14, Codex reran tests (93/93 passed) and build (passed), and checked built asset paths. No actual CI run or live deployment is verified; Playwright is not installed or configured.
-- GitHub repository remains private per the owner's report. Free GitHub Pages is the selected hosting for the public repository. The owner authorized the local email-history rewrite, which is completed; a new TASK 005F commit, push, visibility change and deployment still require authorization.
-- Publication review covered 22 locally reachable commits and 91 blobs. No suspected secrets or accidental private files were found. The owner declined exposure of the private commit email; all 22 commits on local main now use GitHub noreply. Remote history still requires updating before publication. Scope and limitations are recorded in PROJECT_LOG.md.
+- TASK 005F publication is implemented and verified at 5fec675. Workflow run 38573433621 passed npm ci, 93 tests, build and GitHub Pages deployment on Node.js 22.23.3. Final README/log/status updates and a real screenshot are prepared locally for the owner's commit/push before closing the task. Playwright is not installed or configured.
+- With explicit owner approval, the original repository was retained as private slotledger-qa-demo-private-archive and independent slotledger-qa-demo (ID 1418948555) was made public. Pages uses GitHub Actions; the github-pages environment allows only the main branch. The owner approved publication and deployment; do not request that approval again for this agreed workflow.
+- Anonymous GitHub API verified 23 noreply commits, unavailability of all 22 original SHAs in the public repository and unavailability of the private archive. Keep the archive private. Repository: https://github.com/MattZurr/slotledger-qa-demo ; live demo: https://mattzurr.github.io/slotledger-qa-demo/ .
+- Codex verified the deployed create -> display -> refresh -> persists flow in an isolated Chrome profile (one-off CDP smoke check), and HTTP 200 for JS, CSS and favicon. This is separate from Vitest, earlier owner manual checks and a future maintained Playwright suite; details are in PROJECT_LOG.md.
+- npm audit reported one high finding in transitive development dependency source-map-js 1.2.1. No dependency change is authorized; the build-tooling risk assessment is in PROJECT_LOG.md.
 
-Next step within TASK 005F: have the owner review/commit the prepared files, then authorize the remote-history update and publication steps. Do not merge/pull the previous history back into main. Verify the actual CI run and live demo before adding their links/status. Do not restart completed validation/UI tasks or start Playwright before the agreed publication milestone.
+Next step within TASK 005F: owner commits/pushes the final documentation and screenshot, then verify that commit's workflow and close TASK 005F. Publication and live-flow verification are complete; do not repeat them without a relevant change or concern. TASK 007 follows this final synchronization. Do not restart completed validation/UI tasks.
 
 ## Working style and authorization
 
