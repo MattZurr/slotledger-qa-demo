@@ -1,23 +1,21 @@
 # SlotLedger
 
-[Live Demo](https://mattzurr.github.io/slotledger-qa-demo/) · [Verified CI and deployment](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38573433621)
+[Try the live demo](https://mattzurr.github.io/slotledger-qa-demo/) · [View automated checks and deployment](https://github.com/MattZurr/slotledger-qa-demo/actions/runs/38573433621)
 
-A TypeScript room-booking demo built as a **QA Engineer / QA Automation Engineer portfolio project**. It combines a working browser interface with explicit business rules, runtime data validation and regression tests.
+SlotLedger is a small **room-booking application**. It lets users reserve a room, prevents conflicting bookings and keeps reservations after refreshing the page.
 
-I am building SlotLedger to demonstrate how I connect booking risks to test cases, investigate defects and keep application behavior verifiable. The project shows TypeScript domain modeling, boundary testing with Vitest, controlled clocks, storage mocks and separation of UI, validation and persistence.
+I am developing it as a **QA Engineer / QA Automation Engineer portfolio project** to demonstrate how I identify risks, investigate defects and build automated tests. The demo is available now, and I continue to develop the application and its test coverage.
 
-**Current status:** the repository is public and the demo is live on GitHub Pages. CI installation, all 93 tests, production build and deployment passed. A deployed-browser smoke check verified create → display → refresh → persists. Playwright E2E tests will follow publication.
+**Current status:** you can try the working demo without an account. All 93 automated tests pass, and a browser check confirmed that a saved booking is still displayed after refreshing the live demo. Next, I plan to add more automated checks of the application in a browser.
 
-## What works
+## What you can do
 
-- Create a booking for Room A or Room B using native date and time controls.
-- Display saved bookings and restore them after a page refresh.
-- Reject overlapping bookings for the same room and date while allowing back-to-back bookings.
-- Validate real calendar dates, same-day time ranges and booking permissions through reusable TypeScript functions.
-- Validate data loaded from `localStorage`, including identifiers and duplicate booking IDs.
-- Show readable validation/storage errors. A failed initial read prevents new bookings; a failed save does not add an unsaved booking to the list.
+- Choose Room A or Room B, a date and a start/end time to create a booking.
+- See your saved bookings, including after refreshing the page.
+- Get a clear message if the room is already booked or the time is invalid.
+- Book consecutive meetings: one booking can start exactly when another ends.
 
-The interface uses a fixed demo user, Alice, with the `booker` role. Bookings are stored only in the current browser under `slotledger.bookings`.
+The demo uses a sample user, Alice. No sign-in is required. Bookings stay in your browser and are not shared with other people or devices.
 
 ![SlotLedger live demo showing a saved Room A booking after refresh](docs/screenshots/slotledger-demo.png)
 
@@ -44,6 +42,8 @@ npm run preview  # Serve an existing build locally
 ## QA approach and evidence
 
 Tests focus on business boundaries and data consistency. The suite exercises both individual validators and their use in booking creation/storage loading. Storage is mocked; timestamp assertions use a controlled clock.
+
+The application also validates real calendar dates, booking permissions and data loaded from `localStorage`, including identifiers and duplicate booking IDs. Stored bookings use the key `slotledger.bookings`. A failed initial read prevents new bookings; a failed save does not add an unsaved booking to the list.
 
 | Business rule | Risk | Existing test evidence |
 | --- | --- | --- |
