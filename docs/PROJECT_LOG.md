@@ -25,6 +25,8 @@ The repository is the source of truth for current code.
 
 This log is the source of truth for major project decisions, task history and roadmap.
 
+Commit references in this log use the equivalent local IDs after the authorized email-only history rewrite on 2026-10-14. Historical push and remote-audit statements describe the original equivalent commits; the rewritten history has not yet been pushed. See the email-privacy update in section 12.
+
 ## 3. Technology
 
 Current:
@@ -58,7 +60,7 @@ Status: Completed and committed.
 
 Key commit:
 
-`4751dde` — `feat: add booking domain models`
+`70b0866` — `feat: add booking domain models`
 
 Initial models:
 - `Booking`
@@ -74,7 +76,7 @@ Status: Completed and committed.
 
 Commit:
 
-`e1f0042` — `feat: complete booking time validation`
+`2ad8df0` — `feat: complete booking time validation`
 
 Implemented:
 
@@ -95,7 +97,7 @@ Status: Completed and committed.
 
 Commit:
 
-`e1d63d3` — `test: add booking time validation tests`
+`4c170a6` — `test: add booking time validation tests`
 
 Completed:
 - configured Vitest,
@@ -107,9 +109,9 @@ Completed:
 Status: Completed and committed.
 
 Relevant commits:
-- `54024e4` — `feat: validate user booking permissions`
-- `b8558c7` — `WIP: TASK 004 user permissions` (adds `roomExists()` and tests)
-- `098f492` — `feat: complete booking overlap validation and prepare TASK 005`
+- `507be02` — `feat: validate user booking permissions`
+- `090f030` — `WIP: TASK 004 user permissions` (adds `roomExists()` and tests)
+- `8e52aa0` — `feat: complete booking overlap validation and prepare TASK 005`
 
 Implemented:
 - `canCreateBooking(user)`
@@ -132,12 +134,12 @@ Recorded verification:
 Status: Completed, verified and committed.
 
 Important commits:
-- `0a9445b` — `WIP: start booking creation implementation`
-- `6455149` — `WIP: record TASK 005 contract and booking creation sketch`
-- `717db78` — `WIP: add booking creation result and first success test`
-- `b6306d1` — `feat: complete TASK 005B booking creation validation`
-- `ec6426b` — `feat: complete booking ID and timestamp generation`
-- `1c80207` — `feat: add local booking persistence with validation and tests`
+- `362e449` — `WIP: start booking creation implementation`
+- `b176140` — `WIP: record TASK 005 contract and booking creation sketch`
+- `a60b88a` — `WIP: add booking creation result and first success test`
+- `a595e7c` — `feat: complete TASK 005B booking creation validation`
+- `5810496` — `feat: complete booking ID and timestamp generation`
+- `1cb005f` — `feat: add local booking persistence with validation and tests`
 
 #### TASK 005A — creation contract
 
@@ -225,7 +227,7 @@ Final historical verification:
 
 Final TASK 005 commit:
 
-`1c80207` — `feat: add local booking persistence with validation and tests`
+`1cb005f` — `feat: add local booking persistence with validation and tests`
 
 ### Post-TASK-005 repository audit — 2026-10-12
 
@@ -241,7 +243,7 @@ Results:
 A second Codex audit also ran the current local tests/build and reported:
 - 56/56 tests passing,
 - production build passing,
-- TypeScript strict checking passing (historical report; the 2026-10-13 audit found that current tsconfig does not enable `strict`, so this is not current verification),
+- TypeScript strict checking passing (historical report; effective strict options were independently verified with TypeScript 6.0.3 during TASK 005F, see section 12),
 - clean working tree,
 - local `main` aligned with `origin/main`.
 
@@ -259,7 +261,7 @@ The owner chose to finish the minimal UI before publishing the repository and we
 
 `005E.1 date validation -> 005E.2 storage validation -> 006 minimal UI -> 005F CI/README/evidence -> publication -> 007 Playwright -> 008 case study`
 
-The same-day UI target was a delivery goal, not a reason to omit essential checks. TASK 006 is now implemented locally and manually checked as reported below. Task numbers are retained.
+The same-day UI target was a delivery goal, not a reason to omit essential checks. TASK 006 is completed, manually checked as reported below, and committed/pushed at 87f9c3b. Task numbers are retained.
 
 A public GitHub repository and a hosted website are separate deliverables. Hosting has not been selected or verified in this audit. Job applications need not wait for further features or the full case study.
 
@@ -293,9 +295,9 @@ Current regression tests prove that the loader rejects malformed stored times. T
 Status: Completed, verified and committed.
 
 Commit:
-`9ac1931` — `feat: validate booking dates before creation`
+`c3e73a3` — `feat: validate booking dates before creation`
 
-The earlier reference `aea6a92` was the pre-amendment commit. Use `9ac1931` for current Git history.
+An earlier reference identified the pre-amendment commit. Use `c3e73a3` for current local Git history after the email rewrite.
 
 Implemented:
 - exact four-digit `YYYY-MM-DD`; reject empty/malformed/whitespace values,
@@ -316,7 +318,7 @@ The committed creation regression test uses `2026-02-30`. Earlier documentation 
 Status: Completed, verified and committed.
 
 Commit:
-`12228e7` — `feat: validate stored booking semantics and unique IDs`
+`633a662` — `feat: validate stored booking semantics and unique IDs`
 
 Implemented:
 - structural checks before business validators,
@@ -332,9 +334,11 @@ Historical completion evidence on 2026-10-13:
 
 Tests include invalid stored dates and time formats, reversed valid-format times, invalid values for all three identifier fields, duplicate booking IDs, valid multiple bookings and no write/delete/clear on semantic failure.
 
-## 9. Completed local task — TASK 006
+## 9. Completed task — TASK 006
 
-Status: Implemented and reviewed in the working tree. The owner reported successful manual acceptance checks. Not yet committed or published as of the 2026-10-13 audit.
+Status: Implemented, reviewed, committed and pushed. The owner reported successful manual acceptance checks. The repository remains private and a hosted demo has not been verified.
+
+Commit: `87f9c3b` — `feat: add minimal room booking UI with local persistence`. The TASK 005F audit confirmed that local HEAD, origin/main and GitHub main all point to this commit.
 
 ### Verified source scope
 
@@ -373,13 +377,13 @@ Using the same date with no prior conflicting bookings:
 
 Browser/version, exact viewport, test date and screenshots were not supplied. This is a manual smoke check, not a cross-browser/accessibility certification or automated E2E run. UI storage-error flows were reviewed in code but have no owner-reported browser check; module exceptions are covered by mocked storage tests.
 
-### Current automated verification
+### Automated verification at TASK 006 completion
 
 During the documentation audit on 2026-10-13, Codex reran:
 - `npm run test:run`: **93/93 passed, two test files**.
 - `npm run build`: **passed**, TypeScript followed by Vite 8.3.0.
 
-These results apply to the local working tree containing TASK 006, not a CI or deployed version. No application/test changes were made during this documentation audit, and no new tests were added for the UI.
+Those results applied to the then-uncommitted TASK 006 working tree. The owner subsequently committed/pushed it at 87f9c3b. Tests and build were rerun successfully against that commit during TASK 005F (section 12). Neither verification was a CI or deployed run. No new tests were added for the UI.
 
 ## 10. Current architecture, tests and limitations
 
@@ -405,7 +409,7 @@ Creation validation order is permission -> room existence -> time -> date -> ove
 
 Storage tests stub localStorage; timestamp tests use a controlled clock. There are no main.ts/DOM tests, Playwright files or browser E2E tests. No coverage percentage was measured. The permission rule has unit coverage, but the current UI does not offer a viewer role.
 
-Current tsconfig includes unused-code checks and other compiler options, but does not enable `strict`. A historical audit reported strict checking; the checked-in configuration does not substantiate that claim. The successful build proves compilation under current options. Changing compiler mode is outside this documentation task.
+Effective strict type checking is enabled by the locked TypeScript 6.0.3 compiler defaults. Neither tsconfig nor `tsc --showConfig` explicitly prints the strict flag; the compiler API confirmed the effective strict options (section 12). The earlier conclusion that strict was disabled relied only on a missing explicit entry and was incorrect. No compiler/configuration change was needed or made.
 
 ### Deliberate limitations
 
@@ -418,12 +422,12 @@ Current tsconfig includes unused-code checks and other compiler options, but doe
 
 These limitations are not automatic reasons to expand the pre-publication scope. A new blocker must identify a concrete defect affecting the agreed demo.
 
-## 11. Publication-readiness audit — 2026-10-13
+## 11. Historical publication-readiness audit — 2026-10-13, before TASK 006 commit
 
-The only existing project Markdown documents are AGENTS.md and this log. No README, separate architecture document or QA evidence map exists to synchronize. Creating those portfolio deliverables belongs to TASK 005F, which was not implemented in this audit.
+At the time of this audit, the only project Markdown documents were AGENTS.md and this log. README and the portfolio risk/evidence map were still planned. This section preserves that snapshot; section 12 records the subsequent TASK 006 commit and README preparation.
 
 Git and GitHub were checked read-only:
-- Local branch: main; HEAD and local origin/main: `12228e7b89790340e3153763701d7b3a9abfc97b`.
+- Local branch: main; HEAD and local origin/main: `633a6629273bd20bdf9117add70b051fb1a808e5`.
 - GitHub main API returned the same commit.
 - GitHub repository metadata reports **private**.
 - TASK 006 changes remain local: main.ts, style.css, index.html and untracked public/slotledger.svg, plus documentation.
@@ -447,29 +451,96 @@ GitHub reads used the connected GitHub tool for repository metadata, main branch
 
 Corrections applied to documentation:
 - Replace stale instructions to implement TASK 006 with its actual completed local scope.
-- Record TASK 005E.2 as committed at 12228e7, not awaiting commit.
-- Replace the superseded date-validation commit reference with 9ac1931.
+- Record TASK 005E.2 as committed at 633a662, not awaiting commit.
+- Replace the superseded date-validation commit reference with c3e73a3.
 - Correct the date-creation test input description to match code.
 - Keep original TASK 005 structural-validation behavior explicitly historical.
-- Remove strict-mode claims from current verification.
+- Temporarily remove strict-mode claims based on absence of an explicit config flag; this reasoning was later corrected by effective compiler verification in section 12.
 - Preserve the UI-before-publication decision and distinguish manual checks from automated evidence.
 
-## 12. Next task — TASK 005F: Portfolio foundation
+## 12. Current task — TASK 005F: Portfolio foundation
 
-Status: Next, not implemented.
+Status: In progress. README/risk map, GitHub Actions CI/Pages workflow and Vite base configuration are prepared locally. Local tests/build pass; owner approval, actual CI execution and public deployment verification remain pending. See the 2026-10-14 update below.
 
-Bounded scope:
-1. Have the owner commit the verified TASK 006 implementation and synchronized documentation.
-2. Add a simple GitHub Actions workflow for pushes to main and pull requests, running npm ci -> npm run test:run -> npm run build with one explicitly selected Node version compatible with the lockfile.
-3. Add a concise English README for recruiters: purpose, working UI, stack, install/run/test commands, rules, architecture, evidence, limitations, AI contribution and roadmap.
-4. Add a small rule -> risk -> test level -> evidence map in README or a short document. Link real unit/CI evidence and identify manual UI checks as manual.
-5. Verify the actual CI run; do not infer CI success from local checks.
-6. Complete the tracked-file/history and publication-content review.
-7. Select static hosting, prepare the build for its serving URL, publish the repository/demo and verify the main flow at the deployed URL before promoting that link.
+### Repository and evidence verification — 2026-10-13
+
+- Clean working tree at audit start; local main and origin/main both at `87f9c3b61415e93961309b558079d764e2319941`.
+- GitHub main API returned the same commit; repository metadata still reports private.
+- Reviewed source confirms the completed TASK 006 flow described in section 9.
+- `npm run test:run`: 93/93 cases passed across two files.
+- `npm run build`: passed, TypeScript check followed by Vite 8.3.0 build.
+- Locked tooling: TypeScript 6.0.3, Vite 8.3.0 and Vitest 5.0.2. Local checks used Node.js 22.14.0; README setup specifies Node 22.x at least 22.12, compatible with the locked tooling.
+- No workflow files exist; GitHub Actions runs API again returned total_count: 0. CI is planned, not passing/verified.
+- No Playwright dependency, configuration or tests exist. Browser smoke evidence remains the owner's earlier manual report; no new browser test was performed.
+- Hosting/live URL and the full publication content/history review remain pending. npm ci was not run and no dependencies were installed during this task.
+
+### TypeScript strict verification
+
+Ran `npx --no-install tsc --showConfig` using the installed compiler. The command is equivalent to the requested `npx tsc --showConfig` while preventing dependency installation. Output resolves the project files and compiler options but does not explicitly include strict or its subordinate flags.
+
+To establish effective behavior rather than infer it from absent entries, read the installed TypeScript 6.0.3 compiler and parsed the same tsconfig via its API. Its getStrictOptionValue returns the compiler default when no flag is supplied; in this compiler, strict defaults to enabled unless explicitly false.
+
+The API confirmed all of these effective options as true: noImplicitAny, noImplicitThis, strictNullChecks, strictFunctionTypes, strictBindCallApply, strictPropertyInitialization, strictBuiltinIteratorReturn, useUnknownInCatchVariables and alwaysStrict. Config parsing reported zero errors. The actual TypeScript/Vite build also passed.
+
+This corrects the prior documentation audit's claim that strict checking was off. That claim relied on the lack of an explicit entry and was not a valid defaults check. Application code, tests and configuration were left unchanged.
+
+### README preparation
+
+Created README.md in English for QA Engineer / QA Automation Engineer recruitment. It introduces the working demo and technical skills, provides local setup/test/build commands, maps business rules to risks and linked Vitest evidence, describes the stored-time defect, architecture, limitations, roadmap and actual AI contribution.
+
+Implemented behavior is separated from planned CI, hosting, Playwright and QA Release Check. The README's dated local verification refers to application commit 87f9c3b; it does not claim a CI pass, automated UI tests, coverage percentage or a live deployment. Owner-reported manual checks link to section 9.
+
+### Publication preparation — 2026-10-14
+
+Decision: use free GitHub Pages for the public repository. The first release is limited to public GitHub, a professional README/risk map, verified basic CI and a working static demo. Playwright and QA Release Check follow publication. The application schedule was clarified later on the same day, as recorded below.
+
+Prepared locally:
+- `.github/workflows/ci-pages.yml`: Node.js 22, `npm ci` -> `npm run test:run` -> `npm run build`, on main pushes, pull requests and manual runs. Actions are pinned to full commit SHAs from the official Vite Pages example.
+- A separate deployment job depends on successful verification and accepts only main pushes/manual main runs. Only that job receives `pages: write` and `id-token: write`; PRs cannot upload a Pages artifact or deploy. No `pull_request_target` trigger is used.
+- `vite.config.ts`: base `/slotledger-qa-demo/`. Vite rewrites the existing favicon reference correctly; no index.html, application logic, test or UI change was needed.
+- README: first-person manual-check narrative, a commit-pinned link to the existing malformed-time storage regression, and accurate preparation status. The owner's Development approach section is unchanged; the risk table, architecture, defect example and limitations are retained.
+
+Actual local verification (Node.js 22.14.0):
+- `npm run test:run`: **93/93 passed across two files**.
+- `npm run build`: **passed**, TypeScript then Vite 8.3.0.
+- Inspected `dist/index.html`: JS, CSS and favicon all start with `/slotledger-qa-demo/`; every referenced file exists in dist. This is build-output verification, not a browser or deployed smoke test.
+- npm ci was not run locally and no dependencies were installed. Clean installation will be verified by the first actual CI run. No CI run, public deployment or new browser-flow result is claimed.
+
+Publication content/history review:
+- Before the email rewrite, local HEAD and cached origin/main matched the TASK 006 commit (now `87f9c3b61415e93961309b558079d764e2319941` on local main); this checkout is not shallow. Reviewed tracked/current file scope, all historical filenames and commit subjects across 22 commits reachable from local refs, and scanned all 91 reachable blobs for private keys, common provider tokens, credential assignments/URLs, local personal paths and email addresses. No matches in blob contents were found.
+- Historical extra assets are Vite starter files; the removed hero PNG was also visually inspected. No accidentally committed environment files, credential files, personal documents, node_modules or build outputs were found in the reviewed paths.
+- Secret-pattern checks also covered commit messages and all 21 current tracked/proposed files, with no matches. Final diff checks confirmed no changes to application code, tests, package files, index.html or tsconfig; the Development approach paragraph matches the owner's original text exactly.
+- At review time, commit author/committer metadata contained one private email address. The owner subsequently declined its public exposure and authorized the local rewrite described below. The address is intentionally not copied into this log.
+- This is a bounded local review, not a guarantee that no secret exists. Remote-only refs, unreachable Git objects, GitHub settings and external attachments were not audited; remote refs were not refreshed during this preparation.
+
+Remaining **blocking before publication** steps:
+1. Owner reviews/commits prepared changes and authorizes updating remote main with the rewritten history. Local commit-email replacement is complete; remote history is not yet updated. Repository visibility and public deployment still require approval.
+2. Make the repository public for the agreed free Pages setup; in Settings -> Pages choose GitHub Actions as the source. Restrict the github-pages environment deployment branch to main. No account setting was changed by Codex.
+3. Push the reviewed changes and rewritten main history after approval, using an explicit force-with-lease check against the actual remote head. Do not merge the previous history back into main. With Pages enabled, this triggers verification followed by deployment automatically. If CI was pushed earlier while Pages was unavailable, configure Pages and manually run the workflow on main; it repeats tests/build before deployment.
+4. Verify the actual successful CI/deployment run and its artifact URL; check create -> display -> refresh -> persists at the live site.
+5. Add the verified Live Demo link and CI evidence/status to README, then use the public repository/demo in applications. A screenshot is optional and must not delay publication.
+
+References used for configuration: [Vite GitHub Pages guide](https://vite.dev/guide/static-deploy.html#github-pages), [GitHub Pages availability](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages), [custom Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
 Repository visibility changes and website deployment follow the owner's authorization/Git workflow. Package.json `private: true` prevents accidental npm package publication; it does not set GitHub visibility.
 
 No new dependency, extra UI feature, general migration layer, coverage target or speculative date rule is required for this milestone. Optional refactors must not delay publication or job applications.
+
+### Commit-email privacy — 2026-10-14
+
+The owner declined public exposure of the private email in existing commits. They reported enabling GitHub email privacy and set the repository-local email to `334506433+MattZurr@users.noreply.github.com`; Codex verified that local setting. The owner explicitly authorized rewriting local history. A verified Git bundle and copies of all five modified/untracked files were stored outside the repository before the operation.
+
+Completed locally:
+- Created an isolated bare copy from the backup bundle. Replaced author/committer email headers in all 22 commits and remapped parent IDs, without installing tools or changing file trees.
+- Before updating main, verified every rewritten commit against its original: exact file tree, commit message, author/committer names and dates, and mapped parent sequence. Signed commits would have stopped the procedure; none were present.
+- Updated local main to `87f9c3b61415e93961309b558079d764e2319941` only after verification. All 22 reachable commits use the noreply email. Original working files and Git status were preserved byte for byte during the operation.
+- Updated current README, AGENTS and log references to the equivalent new commit IDs. Historical document contents inside old commits were preserved, including their original textual commit references. The README regression-test link now targets the rewritten commit and will become available on GitHub after the remote update.
+
+No new TASK 005F commit, push, visibility change or deployment was performed. Cached origin/main and the private remote still contain the previous history; local backups/reflogs also retain it for recovery. This operation does not claim deletion of old objects from GitHub. Check remote refs and any remaining access to original commits before making the repository public. Tests/build were not repeated because application/configuration content was unchanged from the successful local checks above.
+
+### Recruitment schedule clarification — 2026-10-14
+
+The owner plans to start actively sending CVs and LinkedIn applications on Monday 2026-10-19 or Tuesday 2026-10-20. Until Monday, the priority is focused development of SlotLedger: complete TASK 005F/publication first, then advance TASK 007 and, if time permits, TASK 008. Completion of the full roadmap is not a prerequisite for beginning applications. This supersedes earlier wording implying that applications are already being sent. Commit, push, dependency installation and publication approval requirements remain unchanged.
 
 ## 13. Development after publication
 
