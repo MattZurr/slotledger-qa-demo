@@ -6,7 +6,7 @@ SlotLedger is a small **room-booking application**. It lets users reserve a room
 
 I am developing it as a **QA Engineer / QA Automation Engineer portfolio project** to demonstrate how I identify risks, investigate defects and build automated tests. The demo is available now, and I continue to develop the application and its test coverage.
 
-**Current status:** you can try the working demo without an account. All 93 Vitest tests and seven local Playwright browser tests pass. A separate browser check also confirmed that a saved booking is still displayed after refreshing the live demo. I continue to expand the browser tests.
+**Current status:** you can try the working demo without an account. All 93 Vitest tests and eight local Playwright browser tests pass. A separate browser check also confirmed that a saved booking is still displayed after refreshing the live demo. E2E CI configuration is prepared; its first GitHub Actions run is pending.
 
 ## What you can do
 
@@ -48,14 +48,30 @@ npx playwright install chromium
 npm run test:e2e:ui
 ```
 
-Select a test in the UI and run it to inspect its actions and assertions. Playwright starts the local application automatically; keep port `4173` free. Stop UI mode with Ctrl+C before running tests in another terminal.
+Select a test in the UI and run it to inspect its actions and assertions. Playwright starts the local application automatically on port `4173` by default. Two runners must use different ports; results and HTML reports are separated by port.
 
 ```bash
-npm run test:e2e         # Run all browser tests once
-npm run test:e2e:report  # Open the HTML report after a run
+npm run test:e2e                                      # Run once with UI stopped
+npm run test:e2e:report -- playwright-report/4173      # Open the default-port report
 ```
 
+To run tests alongside an open UI, use a second PowerShell terminal:
+
+```powershell
+$env:PLAYWRIGHT_PORT = "4174"
+npm.cmd run test:e2e
+npm.cmd run test:e2e:report -- playwright-report/4174
+```
+
+The variable applies to that terminal and its child processes. Use `Remove-Item Env:PLAYWRIGHT_PORT` to return to the default. On bash/zsh, run `PLAYWRIGHT_PORT=4174 npm run test:e2e`. Results are stored under `test-results/<port>/` and reports under `playwright-report/<port>/`; both are ignored by Git.
+
 On Windows PowerShell, use `npm.cmd` and `npx.cmd` if arguments are not forwarded correctly. The hosted demo alone cannot run this suite; clone the repository to use these commands.
+
+### Browser tests in CI
+
+The prepared workflow runs Vitest and the production build, installs Chromium with its Linux dependencies, then runs Playwright against a local Vite development server. It uses one worker, rejects accidental `test.only` calls and limits the E2E suite to five minutes. A failed E2E run blocks Pages deployment. This does not test the deployed website or serve the production build to Playwright.
+
+The `playwright-report` artifact is configured for upload even after test failure, unless the workflow is cancelled, and is retained for seven days. After a run, download it from GitHub Actions, extract it and open the extracted directory with `npm run test:e2e:report -- <directory>`. Failed-test traces are included in the HTML report. No successful E2E CI run is claimed yet.
 
 ## QA approach and evidence
 
@@ -79,9 +95,11 @@ The application also validates real calendar dates, booking permissions and data
 
 **Deployed-browser verification — 2026-10-14:** Codex ran a one-off Chrome smoke check at the live URL using an isolated browser profile: create a Room A booking → display its card → refresh → restore the same booking from localStorage. JS, CSS and favicon returned HTTP 200. This verifies one deployed flow; it is not a maintained Playwright suite or cross-browser coverage. Details are recorded in the [publication evidence](docs/PROJECT_LOG.md#public-repository-and-github-pages--2026-10-14).
 
-I also completed local manual UI smoke checks: create → display → refresh → persists, overlap rejection, touching boundaries, a different room, reversed times, narrow layout and Tab navigation. These checks are recorded in the [project log](docs/PROJECT_LOG.md#manual-acceptance-evidence). The Vitest suite does not exercise the browser UI; seven maintained Playwright tests now cover selected browser flows locally. Cross-browser coverage and UI storage-failure checks remain future work.
+I also completed local manual UI smoke checks: create → display → refresh → persists, overlap rejection, touching boundaries, a different room, reversed times, narrow layout and Tab navigation. These checks are recorded in the [project log](docs/PROJECT_LOG.md#manual-acceptance-evidence). The Vitest suite does not exercise the browser UI; eight maintained Playwright tests now cover selected browser flows locally. Cross-browser coverage and UI storage-failure checks remain future work.
 
 **Local E2E verification - 2026-10-14:** all seven tests in [`e2e/booking.spec.ts`](e2e/booking.spec.ts) passed in Chromium against the local Vite server. The same working tree passed 93/93 Vitest tests and the production build. These are local results, not a new CI run or verification of the deployed E2E suite.
+
+**Local E2E update - 2026-10-15:** eight Chromium tests passed, including invalid time → correct end time without reload → successful booking → previous error disappears. A separate run on port `4174` passed while the owner's UI server remained active on `4173`; the build also passed. E2E CI execution remains pending the owner's commit/push.
 
 ### Defect example: stored time format
 
@@ -109,17 +127,17 @@ Strict type checking is effective with the locked TypeScript 6.0.3 compiler; its
 - Fixed demo user and room catalog; no role switch, booking edit/delete or room management.
 - Same-day bookings only. Past dates are permitted; a future-only policy or booking horizon has not been defined.
 - Storage validation checks individual records and booking-ID uniqueness. It does not re-check all stored overlaps, current room membership or timestamp semantics.
-- Vitest covers business logic and mocked storage. Seven local Chromium Playwright tests cover creation/persistence, overlap rejection, reversed/equal times, touching boundaries and independent rooms/dates. E2E CI integration, cross-browser coverage and browser storage-failure checks remain future work.
+- Vitest covers business logic and mocked storage. Eight local Chromium Playwright tests cover creation/persistence, overlap rejection, reversed/equal times, recovery after invalid time, touching boundaries and independent rooms/dates. E2E CI configuration awaits its first verified run; cross-browser coverage and browser storage-failure checks remain future work.
 
 ## Roadmap
 
 1. **Portfolio foundation — verified:** this README, risk/evidence map and [GitHub Actions workflow](.github/workflows/ci-pages.yml). Installation, tests, build and deployment passed. PR verification is configured but has not yet been exercised by an actual PR.
 2. **First public demo — live:** public repository and free GitHub Pages hosting. Deployment runs only from `main` after successful tests/build; the deployed create → display → refresh flow has been verified.
-3. **Playwright E2E - initial suite verified locally:** seven Chromium tests pass, including booking creation/persistence and overlap rejection. Further failure paths and CI E2E integration are next; the existing GitHub Actions workflow runs Vitest/build/deployment only.
+3. **Playwright E2E - eight tests verified locally, CI prepared:** the workflow now includes Chromium tests and report upload before deployment. Its first E2E CI run and artifact verification are pending the owner's commit/push.
 4. **QA Release Check — planned:** risk-based release scope, defect/regression evidence, known limitations and a documented go/no-go recommendation.
 
 My first publication milestone is a public repository, this README, verified CI and a working GitHub Pages demo. I am preparing this portfolio for QA roles and will continue developing it during my job search.
 
 ### Development approach
 
-I implemented the TypeScript booking logic and unit tests, using AI tools for technical guidance, feedback, and code review. AI also helped create the HTML/CSS interface and visual assets.
+I implemented the TypeScript booking logic, unit tests and Playwright scenarios with AI mentoring, test-scenario suggestions, debugging help, code examples and review. AI directly implemented the HTML/CSS interface and visual assets, and helped prepare tooling, CI configuration and documentation. I review the work and decide what to include.

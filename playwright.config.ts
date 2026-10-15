@@ -1,10 +1,21 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL = "http://127.0.0.1:4173/slotledger-qa-demo/";
+const port = process.env.PLAYWRIGHT_PORT ?? "4173";
+const baseURL = `http://127.0.0.1:${port}/slotledger-qa-demo/`;
 
 export default defineConfig({
   testDir: "./e2e",
-  reporter: [["list"], ["html", { open: "never" }]],
+  outputDir: `test-results/${port}`,
+  reporter: [
+  ["list"],
+  [
+    "html",
+    {
+      open: "never",
+      outputFolder: `playwright-report/${port}`,
+    },
+  ],
+],
   use: {
     baseURL,
     trace: "retain-on-failure",
@@ -13,7 +24,7 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 4173 --strictPort",
+    command: `npm run dev -- --host 127.0.0.1 --port ${port} --strictPort`,
     url: baseURL,
     reuseExistingServer: false,
   },

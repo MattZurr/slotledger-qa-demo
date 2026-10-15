@@ -6,20 +6,20 @@ SlotLedger is an educational TypeScript room-booking application and QA Automati
 
 Current stack: TypeScript, Vite, HTML/CSS, Vitest, Playwright, browser localStorage, Git and GitHub. No application framework, backend or database.
 
-Current status as of 2026-10-14:
+Current status as of 2026-10-15:
 - TASK 005E.1 date validation and TASK 005E.2 semantic storage validation are completed and committed.
 - TASK 006 minimal UI is implemented, reviewed and pushed. Its equivalent commit after the authorized email rewrite is 87f9c3b; the rewritten history and TASK 005F preparation were pushed by the owner at 5fec675. The owner reported successful manual checks of the main flows, narrow layout and keyboard navigation.
 - Codex ran `npm run test:run`: 93/93 tests passed across two files.
 - Codex ran `npm run build`: TypeScript/Vite build passed.
 - Detailed history, commit references and evidence limits belong in [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md).
 - TASK 005F is completed: public repository, live Pages demo, professional README/risk map and screenshot are committed/pushed through 442c9d3. Final workflow run 38577175482 passed npm ci, 93 tests, build and deployment.
-- TASK 007A initial suite is verified locally: seven owner-written Chromium tests in e2e/booking.spec.ts passed on 2026-10-14, covering creation/persistence, overlap rejection, reversed/equal times, touching boundaries and different rooms/dates. Vitest 93/93 and build also passed. E2E is not integrated into CI.
+- TASK 007A initial suite was committed by the owner at 35f71fb. Eight owner-written Chromium tests in e2e/booking.spec.ts passed locally on 2026-10-15, including recovery after correcting an invalid end time. Build passed; the last Vitest result remains 93/93 from 2026-10-14. E2E and report upload are prepared in the CI workflow, pending the owner's commit/push and actual GitHub Actions verification.
 - With explicit owner approval, the original repository was retained as private slotledger-qa-demo-private-archive and independent slotledger-qa-demo (ID 1418948555) was made public. Pages uses GitHub Actions; the github-pages environment allows only the main branch. The owner approved publication and deployment; do not request that approval again for this agreed workflow.
 - Anonymous GitHub API verified 23 noreply commits, unavailability of all 22 original SHAs in the public repository and unavailability of the private archive. Keep the archive private. Repository: https://github.com/MattZurr/slotledger-qa-demo ; live demo: https://mattzurr.github.io/slotledger-qa-demo/ .
 - Codex verified the deployed create -> display -> refresh -> persists flow in an isolated Chrome profile (one-off CDP smoke check), and HTTP 200 for JS, CSS and favicon. This is separate from Vitest, earlier owner manual checks and the maintained local Playwright suite; details are in PROJECT_LOG.md.
 - npm audit reported one high finding in transitive development dependency source-map-js 1.2.1. Its patch update remains unapproved; Playwright installation was approved separately. The build-tooling risk assessment is in PROJECT_LOG.md.
 
-Next step: continue TASK 007 with the owner-written recovery scenario (invalid time -> correct end time -> successful booking -> previous error disappears), deferred to the next session. Then integrate E2E into CI and publish its evidence. Playwright setup and normal runs are already authorized. Stop the owner's Playwright UI before a separate run: both use port 4173. Git commits/push remain owner-controlled. Do not reopen publication or repeat successful checks without a relevant change or concern.
+Next step: owner reviews/commits/pushes the TASK 007 recovery test, concurrent-run configuration, CI integration and documentation. Then verify the actual E2E CI run and downloadable report before claiming CI success. Playwright setup and normal runs are already authorized. The owner's UI uses port 4173; Codex runs tests with PLAYWRIGHT_PORT=4174, with separate test-results/<port> and playwright-report/<port> directories. Keep the owner's UI running; reuseExistingServer remains false. Git commits/push remain owner-controlled. Do not reopen publication or repeat successful checks without a relevant change or concern.
 
 ## Working style and authorization
 

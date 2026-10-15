@@ -620,7 +620,7 @@ The owner plans to start actively sending CVs and LinkedIn applications on Monda
 
 ### TASK 007 — Playwright E2E
 
-Status: In progress. TASK 007A setup and the initial booking-persistence milestone are complete locally. Seven maintained Chromium tests passed; CI E2E integration remains pending. The recovery-after-invalid-time scenario is deferred to the next session. See the session checkpoint below for the final results and scope.
+Status: In progress. Eight maintained Chromium tests passed locally, including recovery after invalid time. Concurrent local runners are verified. CI E2E integration and report upload are prepared, pending the owner's commit/push and the first actual GitHub Actions run. See the 2026-10-15 checkpoint below.
 
 ### TASK 007A setup — 2026-10-14
 
@@ -662,6 +662,32 @@ Some earlier E2E attempts stopped before execution because the owner's Playwrigh
 README now includes local browser-test/UI/report instructions and distinguishes local E2E evidence from the existing Vitest/build/Pages workflow. AGENTS records the checkpoint and next scenario. The Development approach section is preserved. No successful E2E CI run or new deployment is claimed. Commits and pushes remain owner-controlled; these changes are prepared for the owner's commit.
 
 Next session: implement invalid time -> correct end time without reload -> successful booking -> previous error disappears. Then integrate E2E into CI and verify the actual run/report. Viewer E2E requires an agreed way to choose a viewer identity; the current UI always uses a booker.
+
+### TASK 007 recovery, concurrent runners and CI preparation - 2026-10-15
+
+Repository inspection confirmed the owner committed the initial suite at `35f71fb` (test: add initial Playwright booking regression suite); the checkout was clean at session start. The previous checkpoint's prepared-for-commit wording describes the earlier state.
+
+The owner implemented the eighth test: invalid end time -> visible error and zero bookings -> change only end time without reload -> one booking with the corrected details -> success message and previous error no longer visible. Codex reviewed the source and ran all eight Chromium tests successfully. The owner's successful UI run is separate evidence.
+
+The owner also implemented port-based runner configuration with Codex guidance: PLAYWRIGHT_PORT defaults to 4173 and controls baseURL, the Vite server command, test-results/<port> and playwright-report/<port>. reuseExistingServer remains false. Codex ran all eight tests successfully on 4174 while the owner's server remained on 4173 with the same process ID before and after; the 4174 report and last-run file were verified. This proves a separate run can complete with the owner's UI server active, not that both suites executed simultaneously. The initial sandbox attempt failed before tests with Node.js EPERM; an approved run outside the sandbox passed. No package installation was needed.
+
+Prepared CI changes in `.github/workflows/ci-pages.yml`:
+- The existing verify job runs npm ci -> Vitest -> build -> Chromium installation with Linux dependencies -> Playwright. Node.js remains 22; the existing push, PR and manual triggers are preserved.
+- E2E uses `--project=chromium --workers=1 --forbid-only --global-timeout=300000`, with PLAYWRIGHT_PORT=4173. Accidental test.only fails CI; the suite has a five-minute total timeout. Tests still target the local Vite development server, not dist or the hosted demo.
+- Upload the HTML report from playwright-report/4173 as the playwright-report artifact, retained for seven days, including failed-test traces when produced. `!cancelled()` allows upload after a test failure; if earlier steps prevent report creation, the action warns that no files were found.
+- actions/upload-artifact is pinned to v7.0.2 commit `cf430e030ddbb5b0abf93d22962f4752f3646cd9`, verified against its official release. Existing action pins and deployment permissions are preserved. The deploy job still needs successful verify, so an E2E failure prevents deployment. PR verification has no deployment permissions.
+
+Actual local validation:
+- Eight Chromium tests passed with CI=true, port 4174 and the exact E2E CLI flags prepared for GitHub Actions.
+- The production build passed after the owner's port configuration change. It was not repeated for subsequent YAML/documentation-only edits. The build checks src; it is not a type-check of playwright.config.ts or a workflow execution.
+- The workflow parsed without YAML errors using the YAML parser already bundled with the installed Playwright tooling; triggers, step order, deploy dependency/condition and permissions were inspected. This is not GitHub Actions runtime validation.
+- Vitest was not repeated: business code, storage, unit tests and dependencies are unchanged; the last verified result remains 93/93 on 2026-10-14.
+
+README now records eight local tests, separate runner/report commands and pending CI evidence, and describes actual AI contributions to tooling/configuration/documentation and owner-written tests. AGENTS records the current handoff. No application code, dependency manifests, commit or push was changed by Codex. No successful E2E CI run, Ubuntu browser installation, artifact upload or new deployment is claimed yet.
+
+Next: owner reviews, commits and pushes these related changes. Then verify that commit's actual workflow, E2E logs, report artifact and deployment outcome, and add its evidence link. TASK 007 remains open until that verification.
+
+References: [Playwright CI setup](https://playwright.dev/docs/ci-intro), [upload-artifact v7.0.2](https://github.com/actions/upload-artifact/releases/tag/v7.0.2).
 
 ### TASK 008 — QA Release Check case study
 
